@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "today": "Heute",
+    "archive": "Archiv",
+    "study": "Lernen",
+    "library": "Bibliothek"
+  },
+  "briefs": {
+    "title": "Tagesbriefings",
+    "archive": "Briefing-Archiv",
+    "empty": "Noch keine Briefings vorhanden",
+    "readMore": "Weiterlesen",
+    "makeNode": "→ Übung",
+    "nodeCreated": "Übung erstellt!",
+    "generating": "Generiere..."
+  },
+  "study": {
+    "title": "Lernübungen",
+    "dueToday": "Heute fällig",
+    "noDue": "Keine Übungen heute fällig — gut gemacht!",
+    "showAnswer": "Antwort zeigen",
+    "again": "Nochmal",
+    "hard": "Schwer",
+    "good": "Gut",
+    "easy": "Leicht",
+    "generateWeek": "Wochenübungen generieren",
+    "generating": "Generiere Übungen...",
+    "nodesGenerated": "Übungen generiert!",
+    "sets": "Übungssätze",
+    "nodes": "Übungen",
+    "progress": "Fortschritt",
+    "checkAnswer": "Antwort prüfen",
+    "expectedAnswer": "Erwartete Antwort",
+    "typeAnswer": "Antwort eingeben..."
+  },
+  "chat": {
+    "title": "Brief-Chat",
+    "placeholder": "Frage zum Briefing stellen...",
+    "send": "Senden",
+    "selectBrief": "Wähle ein Briefing für den Chat",
+    "thinking": "Denke nach..."
+  },
+  "library": {
+    "empty": "Noch keine Übungen vorhanden"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "language": "Deutsch"
+  }
+}

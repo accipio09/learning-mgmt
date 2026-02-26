@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "today": "Aujourd'hui",
+    "archive": "Archives",
+    "study": "Étudier",
+    "library": "Bibliothèque"
+  },
+  "briefs": {
+    "title": "Briefings quotidiens",
+    "archive": "Archives des briefings",
+    "empty": "Aucun briefing disponible",
+    "readMore": "Lire la suite",
+    "makeNode": "→ Exercice",
+    "nodeCreated": "Exercice créé !",
+    "generating": "Génération..."
+  },
+  "study": {
+    "title": "Exercices",
+    "dueToday": "À revoir aujourd'hui",
+    "noDue": "Aucun exercice à revoir aujourd'hui — bien joué !",
+    "showAnswer": "Voir la réponse",
+    "again": "Encore",
+    "hard": "Difficile",
+    "good": "Bien",
+    "easy": "Facile",
+    "generateWeek": "Générer les exercices de la semaine",
+    "generating": "Génération des exercices...",
+    "nodesGenerated": "Exercices générés !",
+    "sets": "Ensembles d'exercices",
+    "nodes": "Exercices",
+    "progress": "Progrès",
+    "checkAnswer": "Vérifier la réponse",
+    "expectedAnswer": "Réponse attendue",
+    "typeAnswer": "Tapez votre réponse..."
+  },
+  "chat": {
+    "title": "Chat du briefing",
+    "placeholder": "Poser une question sur le briefing...",
+    "send": "Envoyer",
+    "selectBrief": "Sélectionnez un briefing pour le chat",
+    "thinking": "Réflexion..."
+  },
+  "library": {
+    "empty": "Aucun exercice disponible"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "language": "Français"
+  }
+}

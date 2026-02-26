@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "today": "Hôm nay",
+    "archive": "Lưu trữ",
+    "study": "Học tập",
+    "library": "Thư viện"
+  },
+  "briefs": {
+    "title": "Bản tin hàng ngày",
+    "archive": "Kho bản tin",
+    "empty": "Chưa có bản tin nào",
+    "readMore": "Đọc thêm",
+    "makeNode": "→ Bài tập",
+    "nodeCreated": "Đã tạo bài tập!",
+    "generating": "Đang tạo..."
+  },
+  "study": {
+    "title": "Bài tập",
+    "dueToday": "Cần ôn hôm nay",
+    "noDue": "Không có bài tập cần ôn hôm nay — làm tốt lắm!",
+    "showAnswer": "Xem đáp án",
+    "again": "Lại",
+    "hard": "Khó",
+    "good": "Tốt",
+    "easy": "Dễ",
+    "generateWeek": "Tạo bài tập tuần này",
+    "generating": "Đang tạo bài tập...",
+    "nodesGenerated": "Đã tạo bài tập!",
+    "sets": "Bộ bài tập",
+    "nodes": "Bài tập",
+    "progress": "Tiến độ",
+    "checkAnswer": "Kiểm tra đáp án",
+    "expectedAnswer": "Đáp án mong đợi",
+    "typeAnswer": "Nhập câu trả lời..."
+  },
+  "chat": {
+    "title": "Chat bản tin",
+    "placeholder": "Đặt câu hỏi về bản tin...",
+    "send": "Gửi",
+    "selectBrief": "Chọn bản tin để trò chuyện",
+    "thinking": "Đang suy nghĩ..."
+  },
+  "library": {
+    "empty": "Chưa có bài tập nào"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "language": "Tiếng Việt"
+  }
+}

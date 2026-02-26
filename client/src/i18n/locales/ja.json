@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "today": "今日",
+    "archive": "アーカイブ",
+    "study": "学習",
+    "library": "ライブラリ"
+  },
+  "briefs": {
+    "title": "デイリーブリーフ",
+    "archive": "ブリーフアーカイブ",
+    "empty": "ブリーフはまだありません",
+    "readMore": "続きを読む",
+    "makeNode": "→ 練習",
+    "nodeCreated": "練習問題を作成しました！",
+    "generating": "生成中..."
+  },
+  "study": {
+    "title": "練習問題",
+    "dueToday": "今日の復習",
+    "noDue": "今日の復習はありません — お疲れ様！",
+    "showAnswer": "答えを見る",
+    "again": "もう一度",
+    "hard": "難しい",
+    "good": "良い",
+    "easy": "簡単",
+    "generateWeek": "今週の練習を生成",
+    "generating": "練習問題を生成中...",
+    "nodesGenerated": "練習問題の生成完了！",
+    "sets": "練習セット",
+    "nodes": "練習",
+    "progress": "進捗",
+    "checkAnswer": "答えを確認",
+    "expectedAnswer": "期待される回答",
+    "typeAnswer": "回答を入力..."
+  },
+  "chat": {
+    "title": "ブリーフチャット",
+    "placeholder": "ブリーフについて質問...",
+    "send": "送信",
+    "selectBrief": "チャットするブリーフを選択",
+    "thinking": "考え中..."
+  },
+  "library": {
+    "empty": "練習問題はまだありません"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラー",
+    "language": "日本語"
+  }
+}

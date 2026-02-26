@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "today": "Hoy",
+    "archive": "Archivo",
+    "study": "Estudiar",
+    "library": "Biblioteca"
+  },
+  "briefs": {
+    "title": "Informes diarios",
+    "archive": "Archivo de informes",
+    "empty": "No hay informes todavía",
+    "readMore": "Leer más",
+    "makeNode": "→ Ejercicio",
+    "nodeCreated": "¡Ejercicio creado!",
+    "generating": "Generando..."
+  },
+  "study": {
+    "title": "Ejercicios",
+    "dueToday": "Pendientes hoy",
+    "noDue": "No hay ejercicios pendientes hoy — ¡buen trabajo!",
+    "showAnswer": "Ver respuesta",
+    "again": "Otra vez",
+    "hard": "Difícil",
+    "good": "Bien",
+    "easy": "Fácil",
+    "generateWeek": "Generar ejercicios de la semana",
+    "generating": "Generando ejercicios...",
+    "nodesGenerated": "¡Ejercicios generados!",
+    "sets": "Conjuntos de ejercicios",
+    "nodes": "Ejercicios",
+    "progress": "Progreso",
+    "checkAnswer": "Comprobar respuesta",
+    "expectedAnswer": "Respuesta esperada",
+    "typeAnswer": "Escribe tu respuesta..."
+  },
+  "chat": {
+    "title": "Chat del informe",
+    "placeholder": "Hacer una pregunta sobre el informe...",
+    "send": "Enviar",
+    "selectBrief": "Selecciona un informe para chatear",
+    "thinking": "Pensando..."
+  },
+  "library": {
+    "empty": "Aún no hay ejercicios"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "language": "Español"
+  }
+}
