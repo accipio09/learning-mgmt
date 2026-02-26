@@ -38,10 +38,15 @@
     "placeholder": "ブリーフについて質問...",
     "send": "送信",
     "selectBrief": "チャットするブリーフを選択",
-    "thinking": "考え中..."
+    "thinking": "考え中...",
+    "log": "チャット履歴"
   },
   "library": {
-    "empty": "練習問題はまだありません"
+    "empty": "練習問題はまだありません",
+    "nodes": "練習セット",
+    "chats": "チャット履歴",
+    "exchanges": "件",
+    "noChats": "チャットはまだありません"
   },
   "common": {
     "loading": "読み込み中...",

@@ -38,10 +38,15 @@
     "placeholder": "Poser une question sur le briefing...",
     "send": "Envoyer",
     "selectBrief": "Sélectionnez un briefing pour le chat",
-    "thinking": "Réflexion..."
+    "thinking": "Réflexion...",
+    "log": "Historique du chat"
   },
   "library": {
-    "empty": "Aucun exercice disponible"
+    "empty": "Aucun exercice disponible",
+    "nodes": "Ensembles d'exercices",
+    "chats": "Historique du chat",
+    "exchanges": "échanges",
+    "noChats": "Aucun chat disponible"
   },
   "common": {
     "loading": "Chargement...",

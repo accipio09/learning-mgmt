@@ -14,8 +14,10 @@ import {
   getBriefs,
   getBrief,
   createNodeFromBullet,
+  getChatMessages,
   type BriefSummary,
   type BriefFull,
+  type ChatMessage,
 } from "@/lib/api";
 import BriefChat from "@/components/BriefChat";
 
@@ -39,6 +41,7 @@ export default function ArchivePage() {
   const [loading, setLoading] = useState(true);
   const [generatingBullet, setGeneratingBullet] = useState<string | null>(null);
   const [createdBullets, setCreatedBullets] = useState<Set<string>>(new Set());
+  const [chatLog, setChatLog] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
     getBriefs()
@@ -52,6 +55,7 @@ export default function ArchivePage() {
     try {
       const brief = await getBrief(id);
       setSelectedBrief(brief);
+      getChatMessages(id).then(setChatLog).catch(() => setChatLog([]));
     } catch (err) {
       console.error(err);
     } finally {
@@ -218,6 +222,51 @@ export default function ArchivePage() {
           </div>
         </div>
       ))}
+
+      {/* Chat Log */}
+      {chatLog.length > 0 && (
+        <div className="mt-8 border-t border-border pt-6">
+          <h2 className="mb-4 text-lg font-semibold text-primary font-terminal">
+            <span className="text-primary/50 mr-1">&gt;</span>
+            {t("chat.log")}{" "}
+            <span className="text-sm font-normal text-muted-foreground">
+              ({Math.floor(chatLog.length / 2)} {t("library.exchanges")})
+            </span>
+          </h2>
+          <div className="space-y-4">
+            {chatLog
+              .filter((m) => m.role === "user")
+              .map((userMsg, i) => {
+                const assistantMsg = chatLog.find(
+                  (m, j) => j > chatLog.indexOf(userMsg) && m.role === "assistant"
+                );
+                return (
+                  <div key={i} className="rounded-xl glow-border overflow-hidden">
+                    <div className="bg-primary/10 px-4 py-3">
+                      <p className="text-xs font-medium text-primary font-terminal mb-1">Q:</p>
+                      <p className="text-sm leading-relaxed">{userMsg.content}</p>
+                    </div>
+                    {assistantMsg && (
+                      <div className="bg-secondary/30 px-4 py-3 border-t border-border">
+                        <p className="text-xs font-medium text-success font-terminal mb-1">A:</p>
+                        <div className="prose-chat text-sm leading-relaxed">
+                          <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdLink}>
+                            {assistantMsg.content}
+                          </ReactMarkdown>
+                        </div>
+                        {assistantMsg.created_at && (
+                          <p className="mt-2 text-[10px] text-muted-foreground font-terminal">
+                            {new Date(assistantMsg.created_at + "Z").toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
     </div>
 
       {/* Chat */}

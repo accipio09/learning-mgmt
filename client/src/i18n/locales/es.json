@@ -38,10 +38,15 @@
     "placeholder": "Hacer una pregunta sobre el informe...",
     "send": "Enviar",
     "selectBrief": "Selecciona un informe para chatear",
-    "thinking": "Pensando..."
+    "thinking": "Pensando...",
+    "log": "Historial de chat"
   },
   "library": {
-    "empty": "Aún no hay ejercicios"
+    "empty": "Aún no hay ejercicios",
+    "nodes": "Conjuntos de ejercicios",
+    "chats": "Historial de chat",
+    "exchanges": "intercambios",
+    "noChats": "Aún no hay chats"
   },
   "common": {
     "loading": "Cargando...",

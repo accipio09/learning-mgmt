@@ -38,10 +38,15 @@
     "placeholder": "Frage zum Briefing stellen...",
     "send": "Senden",
     "selectBrief": "Wähle ein Briefing für den Chat",
-    "thinking": "Denke nach..."
+    "thinking": "Denke nach...",
+    "log": "Chatverlauf"
   },
   "library": {
-    "empty": "Noch keine Übungen vorhanden"
+    "empty": "Noch keine Übungen vorhanden",
+    "nodes": "Übungssätze",
+    "chats": "Chatverlauf",
+    "exchanges": "Austausche",
+    "noChats": "Noch keine Chats vorhanden"
   },
   "common": {
     "loading": "Laden...",

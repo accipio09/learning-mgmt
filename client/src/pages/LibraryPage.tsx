@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   Loader2,
   ChevronDown,
@@ -8,16 +10,21 @@ import {
   ListChecks,
   PenLine,
   BookOpen,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getNodeSets,
   getNodesInSet,
+  getChatSummaries,
+  getChatMessages,
   type NodeSet,
   type LearningNode,
   type FlashcardContent,
   type MultipleChoiceContent,
   type FreeResponseContent,
+  type ChatSummary,
+  type ChatMessage,
 } from "@/lib/api";
 
 const typeIcons = {
@@ -109,8 +116,22 @@ function getQuestionText(node: LearningNode): string {
   return (node.content as FreeResponseContent).question;
 }
 
+const mdLink = {
+  a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-accent underline break-all hover:opacity-80"
+    >
+      {children}
+    </a>
+  ),
+};
+
 export default function LibraryPage() {
   const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<"nodes" | "chats">("nodes");
   const [sets, setSets] = useState<NodeSet[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedSet, setExpandedSet] = useState<number | null>(null);
@@ -118,12 +139,29 @@ export default function LibraryPage() {
   const [loadingSet, setLoadingSet] = useState<number | null>(null);
   const [expandedNode, setExpandedNode] = useState<number | null>(null);
 
+  // Chat history state
+  const [chatSummaries, setChatSummaries] = useState<ChatSummary[]>([]);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [expandedChat, setExpandedChat] = useState<number | null>(null);
+  const [chatMessages, setChatMessages] = useState<Record<number, ChatMessage[]>>({});
+  const [loadingChat, setLoadingChat] = useState<number | null>(null);
+
   useEffect(() => {
     getNodeSets()
       .then(setSets)
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "chats" && chatSummaries.length === 0) {
+      setChatLoading(true);
+      getChatSummaries()
+        .then(setChatSummaries)
+        .catch(console.error)
+        .finally(() => setChatLoading(false));
+    }
+  }, [activeTab]);
 
   async function toggleSet(setId: number) {
     if (expandedSet === setId) {
@@ -149,6 +187,25 @@ export default function LibraryPage() {
     }
   }
 
+  async function toggleChat(briefId: number) {
+    if (expandedChat === briefId) {
+      setExpandedChat(null);
+      return;
+    }
+    setExpandedChat(briefId);
+    if (!chatMessages[briefId]) {
+      setLoadingChat(briefId);
+      try {
+        const messages = await getChatMessages(briefId);
+        setChatMessages((prev) => ({ ...prev, [briefId]: messages }));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingChat(null);
+      }
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex h-[calc(100vh-3.5rem)] items-center justify-center">
@@ -159,11 +216,146 @@ export default function LibraryPage() {
 
   return (
     <div className="mx-auto max-w-4xl p-6 animate-fade-in-up">
-      <h1 className="mb-6 text-2xl font-bold font-terminal text-glow">
+      <h1 className="mb-4 text-2xl font-bold font-terminal text-glow">
         {t("nav.library")}
       </h1>
 
-      {sets.length === 0 && (
+      {/* Tab toggle */}
+      <div className="mb-6 flex gap-1 rounded-lg bg-secondary/50 p-1 w-fit">
+        <button
+          onClick={() => setActiveTab("nodes")}
+          className={cn(
+            "rounded-md px-4 py-1.5 text-sm font-terminal transition-colors",
+            activeTab === "nodes"
+              ? "bg-card text-primary shadow-sm text-glow"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {t("library.nodes")}
+        </button>
+        <button
+          onClick={() => setActiveTab("chats")}
+          className={cn(
+            "rounded-md px-4 py-1.5 text-sm font-terminal transition-colors",
+            activeTab === "chats"
+              ? "bg-card text-primary shadow-sm text-glow"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          {t("library.chats")}
+        </button>
+      </div>
+
+      {/* Chat History Tab */}
+      {activeTab === "chats" && (
+        <>
+          {chatLoading && (
+            <div className="flex items-center gap-2 text-muted-foreground font-terminal">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              {t("common.loading")}
+            </div>
+          )}
+
+          {!chatLoading && chatSummaries.length === 0 && (
+            <div className="rounded-xl p-12 text-center glow-border">
+              <MessageSquare className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
+              <p className="text-muted-foreground font-terminal">
+                {t("library.noChats")}
+              </p>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {chatSummaries.map((summary) => {
+              const isExpanded = expandedChat === summary.brief_id;
+              const messages = chatMessages[summary.brief_id];
+              const isLoading = loadingChat === summary.brief_id;
+
+              return (
+                <div key={summary.brief_id} className="rounded-xl glow-border overflow-hidden">
+                  <button
+                    onClick={() => toggleChat(summary.brief_id)}
+                    className="flex w-full items-center justify-between bg-card px-4 py-3 text-left transition-colors hover:bg-secondary/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      {isExpanded ? (
+                        <ChevronDown className="h-4 w-4 text-primary" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <div className="min-w-0">
+                        <span className="font-medium font-terminal">
+                          {summary.brief_title || summary.brief_date}
+                        </span>
+                        <span className="ml-2 text-xs text-muted-foreground font-terminal">
+                          {summary.brief_date}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="rounded-md bg-secondary px-1.5 py-0.5 text-[10px] font-terminal uppercase text-accent border border-accent/20">
+                        {summary.language}
+                      </span>
+                      <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-terminal text-muted-foreground">
+                        {Math.floor(summary.message_count / 2)} {t("library.exchanges")}
+                      </span>
+                    </div>
+                  </button>
+
+                  {isExpanded && (
+                    <div className="border-t border-border">
+                      {isLoading && (
+                        <div className="flex items-center gap-2 px-4 py-4 text-sm text-muted-foreground font-terminal">
+                          <Loader2 className="h-3 w-3 animate-spin text-primary" />
+                          {t("common.loading")}
+                        </div>
+                      )}
+
+                      {messages && (
+                        <div className="divide-y divide-border">
+                          {messages
+                            .filter((m) => m.role === "user")
+                            .map((userMsg, i) => {
+                              const assistantMsg = messages.find(
+                                (m, j) => j > messages.indexOf(userMsg) && m.role === "assistant"
+                              );
+                              return (
+                                <div key={i}>
+                                  <div className="bg-primary/5 px-6 py-3">
+                                    <p className="text-xs font-medium text-primary font-terminal mb-1">Q:</p>
+                                    <p className="text-sm leading-relaxed">{userMsg.content}</p>
+                                  </div>
+                                  {assistantMsg && (
+                                    <div className="bg-secondary/20 px-6 py-3">
+                                      <p className="text-xs font-medium text-success font-terminal mb-1">A:</p>
+                                      <div className="prose-chat text-sm leading-relaxed">
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdLink}>
+                                          {assistantMsg.content}
+                                        </ReactMarkdown>
+                                      </div>
+                                      {assistantMsg.created_at && (
+                                        <p className="mt-2 text-[10px] text-muted-foreground font-terminal">
+                                          {new Date(assistantMsg.created_at + "Z").toLocaleString()}
+                                        </p>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {/* Node Sets Tab */}
+      {activeTab === "nodes" && sets.length === 0 && (
         <div className="rounded-xl p-12 text-center glow-border">
           <BookOpen className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
           <p className="text-muted-foreground font-terminal">
@@ -172,7 +364,7 @@ export default function LibraryPage() {
         </div>
       )}
 
-      <div className="space-y-3">
+      {activeTab === "nodes" && <div className="space-y-3">
         {sets.map((set) => {
           const isExpanded = expandedSet === set.id;
           const nodes = setNodes[set.id];
@@ -266,7 +458,7 @@ export default function LibraryPage() {
             </div>
           );
         })}
-      </div>
+      </div>}
     </div>
   );
 }

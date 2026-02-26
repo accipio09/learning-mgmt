@@ -50,6 +50,19 @@ export function getLatestBrief(): Promise<BriefFull> {
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  created_at?: string;
+}
+
+export interface ChatSummary {
+  brief_id: number;
+  brief_title: string;
+  brief_date: string;
+  language: string;
+  message_count: number;
+}
+
+export function getChatSummaries(): Promise<ChatSummary[]> {
+  return request("/chat/summaries");
 }
 
 export function getChatMessages(briefId: number): Promise<ChatMessage[]> {

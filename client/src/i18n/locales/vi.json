@@ -38,10 +38,15 @@
     "placeholder": "Đặt câu hỏi về bản tin...",
     "send": "Gửi",
     "selectBrief": "Chọn bản tin để trò chuyện",
-    "thinking": "Đang suy nghĩ..."
+    "thinking": "Đang suy nghĩ...",
+    "log": "Lịch sử chat"
   },
   "library": {
-    "empty": "Chưa có bài tập nào"
+    "empty": "Chưa có bài tập nào",
+    "nodes": "Bộ bài tập",
+    "chats": "Lịch sử chat",
+    "exchanges": "trao đổi",
+    "noChats": "Chưa có cuộc trò chuyện nào"
   },
   "common": {
     "loading": "Đang tải...",

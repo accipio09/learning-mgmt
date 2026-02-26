@@ -6,9 +6,31 @@ const router = Router();
 
 const MAX_HISTORY_LENGTH = 50;
 
-const insertMessage = db.prepare(
-  "INSERT INTO chat_messages (brief_id, role, content) VALUES (?, ?, ?)"
-);
+let insertMessage: ReturnType<typeof db.prepare<[number, string, string]>> | null = null;
+function getInsertMessage() {
+  if (!insertMessage) {
+    insertMessage = db.prepare<[number, string, string]>(
+      "INSERT INTO chat_messages (brief_id, role, content) VALUES (?, ?, ?)"
+    );
+  }
+  return insertMessage;
+}
+
+// Chat summaries: briefs that have chat messages
+router.get("/summaries", (_req, res) => {
+  const summaries = db
+    .prepare(
+      `SELECT cm.brief_id, b.title AS brief_title, b.date AS brief_date, b.language,
+              COUNT(*) AS message_count
+       FROM chat_messages cm
+       JOIN briefs b ON b.id = cm.brief_id
+       GROUP BY cm.brief_id
+       ORDER BY MAX(cm.id) DESC`
+    )
+    .all();
+
+  res.json(summaries);
+});
 
 // Load persisted messages for a brief
 router.get("/:briefId", (req, res) => {
@@ -19,9 +41,9 @@ router.get("/:briefId", (req, res) => {
 
   const messages = db
     .prepare(
-      "SELECT role, content FROM chat_messages WHERE brief_id = ? ORDER BY id ASC"
+      "SELECT role, content, created_at FROM chat_messages WHERE brief_id = ? ORDER BY id ASC"
     )
-    .all(briefId) as Array<{ role: string; content: string }>;
+    .all(briefId) as Array<{ role: string; content: string; created_at: string }>;
 
   res.json(messages);
 });
@@ -65,9 +87,10 @@ router.post("/", async (req, res) => {
     );
 
     // Persist both messages
+    const stmt = getInsertMessage();
     const saveMessages = db.transaction(() => {
-      insertMessage.run(briefId, "user", message);
-      insertMessage.run(briefId, "assistant", response);
+      stmt.run(briefId, "user", message);
+      stmt.run(briefId, "assistant", response);
     });
     saveMessages();
 
