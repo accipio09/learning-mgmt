@@ -31,17 +31,39 @@ router.get("/sets/:id", (req, res) => {
 });
 
 // Get today's due nodes
-router.get("/due", (_req, res) => {
+router.get("/due", (req, res) => {
+
   const today = new Date().toISOString().split("T")[0];
+  const showAll = req.query.all === "true";
+  const setsParam = req.query.sets as string | undefined;
+
+  const conditions: string[] = [];
+  const params: (string | number)[] = [];
+
+  if (!showAll) {
+    conditions.push("r.due_date <= ?");
+    params.push(today);
+  }
+
+  if (setsParam) {
+    const setIds = setsParam.split(",").map(Number).filter(Boolean);
+    if (setIds.length > 0) {
+      conditions.push(`n.set_id IN (${setIds.map(() => "?").join(",")})`);
+      params.push(...setIds);
+    }
+  }
+
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
   const nodes = db
     .prepare(
       `SELECT n.*, r.ease, r.interval, r.repetitions, r.due_date
        FROM learning_nodes n
        JOIN reviews r ON r.node_id = n.id
-       WHERE r.due_date <= ?
+       ${where}
        ORDER BY r.due_date ASC`
     )
-    .all(today);
+    .all(...params);
   res.json(nodes);
 });
 

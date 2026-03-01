@@ -67,7 +67,7 @@ function FlashcardNode({
             <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
               {language}
             </p>
-            <p className="text-lg leading-relaxed">{content.front}</p>
+            <p className="text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: content.front }} />
             {!flipped && (
               <button
                 onClick={handleFlip}
@@ -84,7 +84,7 @@ function FlashcardNode({
             <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
               {language}
             </p>
-            <p className="text-lg leading-relaxed">{content.back}</p>
+            <p className="text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: content.back }} />
             {sourceBullet && (
               <p className="mt-4 text-xs text-muted-foreground italic font-terminal">
                 {sourceBullet}
@@ -229,25 +229,70 @@ export default function StudyPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [reviewed, setReviewed] = useState(0);
+  const [selectedSets, setSelectedSets] = useState<Set<number>>(new Set());
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
-    loadData();
+    loadSets();
   }, []);
 
-  async function loadData() {
+  async function loadSets() {
     setLoading(true);
     try {
-      const [nodes, nodeSets] = await Promise.all([
-        getDueNodes(),
-        getNodeSets(),
-      ]);
-      setDueNodes(nodes);
+      const nodeSets = await getNodeSets();
       setSets(nodeSets);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadCards(
+    filterSets?: Set<number>,
+    filterAll?: boolean
+  ) {
+    const setsToUse = filterSets ?? selectedSets;
+    const allToUse = filterAll ?? showAll;
+    if (setsToUse.size === 0) {
+      setDueNodes([]);
+      setCurrentIndex(0);
+      setReviewed(0);
+      setRevealed(false);
+      return;
+    }
+    setLoading(true);
+    setCurrentIndex(0);
+    setReviewed(0);
+    setRevealed(false);
+    try {
+      const nodes = await getDueNodes({
+        sets: [...setsToUse],
+        all: allToUse || undefined,
+      });
+      setDueNodes(nodes);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function toggleSet(setId: number) {
+    const next = new Set(selectedSets);
+    if (next.has(setId)) {
+      next.delete(setId);
+    } else {
+      next.add(setId);
+    }
+    setSelectedSets(next);
+    loadCards(next);
+  }
+
+  function toggleShowAll() {
+    const next = !showAll;
+    setShowAll(next);
+    loadCards(undefined, next);
   }
 
   async function handleRating(rating: number) {
@@ -278,7 +323,7 @@ export default function StudyPage() {
         year: now.getFullYear(),
         week: getISOWeek(now),
       });
-      await loadData();
+      await loadCards();
     } catch (err) {
       console.error(err);
     } finally {
@@ -322,22 +367,54 @@ export default function StudyPage() {
         </button>
       </div>
 
-      {/* Node Sets overview */}
+      {/* Deck filters */}
       {sets.length > 0 && (
-        <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
-          {sets.map((set) => (
-            <div
-              key={set.id}
-              className="shrink-0 rounded-lg bg-card px-3 py-2 text-xs font-terminal glow-border-cyan"
-            >
-              <span className="font-medium text-accent">
-                {set.name || `W${set.week}/${set.year}`}
-              </span>
-            </div>
-          ))}
+        <div className="mb-4 space-y-3">
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {sets.map((set) => {
+              const isSelected = selectedSets.has(set.id);
+              return (
+                <button
+                  key={set.id}
+                  onClick={() => toggleSet(set.id)}
+                  className={cn(
+                    "shrink-0 rounded-lg px-3 py-2 text-xs font-terminal transition-colors",
+                    isSelected
+                      ? "bg-primary text-primary-foreground btn-glow"
+                      : "bg-card text-muted-foreground glow-border-cyan hover:text-accent"
+                  )}
+                >
+                  {set.name || `W${set.week}/${set.year}`}
+                  {set.node_count > 0 && (
+                    <span className="ml-1.5 opacity-60">{set.node_count}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={toggleShowAll}
+            className={cn(
+              "rounded-lg px-3 py-1.5 text-xs font-terminal transition-colors",
+              showAll
+                ? "bg-warning/20 text-warning border border-warning/30"
+                : "bg-card text-muted-foreground glow-border hover:text-foreground"
+            )}
+          >
+            {showAll ? t("study.showAllOn") : t("study.showAllOff")}
+          </button>
         </div>
       )}
 
+      {/* No deck selected — prompt */}
+      {selectedSets.size === 0 ? (
+        <div className="rounded-2xl p-16 text-center glow-border">
+          <p className="text-lg font-medium font-terminal text-muted-foreground">
+            {t("study.selectDecks")}
+          </p>
+        </div>
+      ) : (
+      <>
       {/* Due count / progress */}
       {total > 0 && currentNode && (
         <div className="mb-4">
@@ -423,6 +500,8 @@ export default function StudyPage() {
             </p>
           )}
         </div>
+      )}
+      </>
       )}
     </div>
   );

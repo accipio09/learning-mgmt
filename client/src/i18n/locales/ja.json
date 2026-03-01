@@ -31,7 +31,10 @@
     "progress": "進捗",
     "checkAnswer": "答えを確認",
     "expectedAnswer": "期待される回答",
-    "typeAnswer": "回答を入力..."
+    "typeAnswer": "回答を入力...",
+    "showAllOn": "全カード（SM-2無視）",
+    "showAllOff": "学習済みも含める",
+    "selectDecks": "デッキを選択してください"
   },
   "chat": {
     "title": "ブリーフチャット",

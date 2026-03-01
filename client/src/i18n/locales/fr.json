@@ -31,7 +31,10 @@
     "progress": "Progrès",
     "checkAnswer": "Vérifier la réponse",
     "expectedAnswer": "Réponse attendue",
-    "typeAnswer": "Tapez votre réponse..."
+    "typeAnswer": "Tapez votre réponse...",
+    "showAllOn": "Toutes les cartes (SM-2 ignoré)",
+    "showAllOff": "Inclure les cartes déjà étudiées",
+    "selectDecks": "Sélectionnez un ou plusieurs decks pour commencer"
   },
   "chat": {
     "title": "Chat du briefing",

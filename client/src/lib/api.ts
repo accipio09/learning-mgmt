@@ -148,8 +148,17 @@ export async function getNodesInSet(setId: number): Promise<LearningNode[]> {
   return raw.map(parseNode);
 }
 
-export async function getDueNodes(): Promise<LearningNode[]> {
-  const raw = await request<Record<string, unknown>[]>("/nodes/due");
+export async function getDueNodes(opts?: {
+  sets?: number[];
+  all?: boolean;
+}): Promise<LearningNode[]> {
+  const params = new URLSearchParams();
+  if (opts?.sets?.length) params.set("sets", opts.sets.join(","));
+  if (opts?.all) params.set("all", "true");
+  const qs = params.toString();
+  const raw = await request<Record<string, unknown>[]>(
+    `/nodes/due${qs ? `?${qs}` : ""}`
+  );
   return raw.map(parseNode);
 }
 

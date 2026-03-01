@@ -31,7 +31,10 @@
     "progress": "Tiến độ",
     "checkAnswer": "Kiểm tra đáp án",
     "expectedAnswer": "Đáp án mong đợi",
-    "typeAnswer": "Nhập câu trả lời..."
+    "typeAnswer": "Nhập câu trả lời...",
+    "showAllOn": "Tất cả thẻ (bỏ qua SM-2)",
+    "showAllOff": "Bao gồm thẻ đã học",
+    "selectDecks": "Chọn một hoặc nhiều bộ bài để bắt đầu"
   },
   "chat": {
     "title": "Chat bản tin",

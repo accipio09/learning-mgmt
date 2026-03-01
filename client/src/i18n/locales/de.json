@@ -31,7 +31,10 @@
     "progress": "Fortschritt",
     "checkAnswer": "Antwort prüfen",
     "expectedAnswer": "Erwartete Antwort",
-    "typeAnswer": "Antwort eingeben..."
+    "typeAnswer": "Antwort eingeben...",
+    "showAllOn": "Alle Karten (SM-2 ignoriert)",
+    "showAllOff": "Bereits gelernte einbeziehen",
+    "selectDecks": "Wähle ein oder mehrere Decks zum Lernen"
   },
   "chat": {
     "title": "Brief-Chat",

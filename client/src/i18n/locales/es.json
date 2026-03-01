@@ -31,7 +31,10 @@
     "progress": "Progreso",
     "checkAnswer": "Comprobar respuesta",
     "expectedAnswer": "Respuesta esperada",
-    "typeAnswer": "Escribe tu respuesta..."
+    "typeAnswer": "Escribe tu respuesta...",
+    "showAllOn": "Todas las tarjetas (SM-2 ignorado)",
+    "showAllOff": "Incluir las ya estudiadas",
+    "selectDecks": "Selecciona uno o más mazos para empezar"
   },
   "chat": {
     "title": "Chat del informe",
