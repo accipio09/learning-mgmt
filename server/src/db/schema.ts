@@ -67,6 +67,16 @@ export function initializeDatabase() {
     CREATE INDEX IF NOT EXISTS idx_reviews_due ON reviews(due_date);
     CREATE INDEX IF NOT EXISTS idx_chat_messages_brief ON chat_messages(brief_id);
   `);
+
+  // Migration: add name column to node_sets
+  const hasNameCol = db
+    .prepare("PRAGMA table_info(node_sets)")
+    .all()
+    .some((col: any) => col.name === "name");
+
+  if (!hasNameCol) {
+    db.exec("ALTER TABLE node_sets ADD COLUMN name TEXT");
+  }
 }
 
 function migrateToNodes() {

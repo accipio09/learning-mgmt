@@ -331,7 +331,7 @@ export default function StudyPage() {
               className="shrink-0 rounded-lg bg-card px-3 py-2 text-xs font-terminal glow-border-cyan"
             >
               <span className="font-medium text-accent">
-                W{set.week}/{set.year}
+                {set.name || `W${set.week}/${set.year}`}
               </span>
             </div>
           ))}
@@ -360,7 +360,7 @@ export default function StudyPage() {
 
       {/* Study node */}
       {currentNode ? (
-        <div className="flex flex-col items-center">
+        <div className={cn("flex flex-col items-center", revealed && "pb-20")}>
           {currentNode.node_type === "flashcard" && (
             <FlashcardNode
               content={currentNode.content as FlashcardContent}
@@ -384,9 +384,9 @@ export default function StudyPage() {
             />
           )}
 
-          {/* Rating buttons — shown after reveal for all node types */}
+          {/* Rating buttons — fixed at bottom when revealed */}
           {revealed && (
-            <div className="mt-6 flex gap-3">
+            <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center gap-3 bg-background/80 backdrop-blur-sm border-t border-border px-4 py-4">
               {[
                 {
                   rating: 1,

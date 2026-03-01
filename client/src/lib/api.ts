@@ -125,6 +125,7 @@ export interface NodeSet {
   year: number;
   week: number;
   generated_at: string;
+  name?: string;
 }
 
 function parseNode(raw: Record<string, unknown>): LearningNode {

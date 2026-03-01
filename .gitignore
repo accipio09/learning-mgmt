@@ -14,6 +14,11 @@ data/
 *.db
 *.db-shm
 *.db-wal
+*.db.backup-*
+
+# Anki exports
+*.apkg
+*.colpkg
 
 # Build output
 dist/
