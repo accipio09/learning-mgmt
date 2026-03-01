@@ -1,17 +1,15 @@
 import { NavLink } from "react-router-dom";
-import { BookOpen, GraduationCap, Archive, Library } from "lucide-react";
+import { BookOpen, Library } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function NavBar() {
   const links = [
     { to: "/", icon: BookOpen },
-    { to: "/archive", icon: Archive },
     { to: "/library", icon: Library },
-    { to: "/study", icon: GraduationCap },
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-card/95 backdrop-blur-sm nav-glow font-terminal">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-white nav-glow font-terminal">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-center px-6">
         <div className="flex items-center gap-3">
           {links.map(({ to, icon: Icon }) => (

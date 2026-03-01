@@ -49,7 +49,13 @@
     "nodes": "Bộ bài tập",
     "chats": "Lịch sử chat",
     "exchanges": "trao đổi",
-    "noChats": "Chưa có cuộc trò chuyện nào"
+    "noChats": "Chưa có cuộc trò chuyện nào",
+    "briefs": "Bản tin",
+    "briefCount": "bản tin",
+    "chatCount": "cuộc trò chuyện",
+    "due": "cần ôn",
+    "study": "Học",
+    "history": "Lịch sử"
   },
   "common": {
     "loading": "Đang tải...",

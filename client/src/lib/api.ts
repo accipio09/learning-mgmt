@@ -129,6 +129,40 @@ export interface NodeSet {
   node_count: number;
 }
 
+// --- Subjects ---
+
+export interface SubjectBriefs {
+  slug: "briefs";
+  type: "briefs";
+  brief_count: number;
+  chat_count: number;
+  node_count: number;
+  due_count: number;
+}
+
+export interface SubjectLanguage {
+  slug: string;
+  type: "language";
+  language_code: string;
+  node_count: number;
+  due_count: number;
+}
+
+export type Subject = SubjectBriefs | SubjectLanguage;
+
+export function getSubjects(): Promise<Subject[]> {
+  return request("/nodes/subjects");
+}
+
+export async function getNodesByLanguage(
+  lang: string
+): Promise<LearningNode[]> {
+  const raw = await request<Record<string, unknown>[]>(
+    `/nodes/by-language/${lang}`
+  );
+  return raw.map(parseNode);
+}
+
 function parseNode(raw: Record<string, unknown>): LearningNode {
   return {
     ...raw,
@@ -151,10 +185,14 @@ export async function getNodesInSet(setId: number): Promise<LearningNode[]> {
 export async function getDueNodes(opts?: {
   sets?: number[];
   all?: boolean;
+  language?: string;
+  source?: string;
 }): Promise<LearningNode[]> {
   const params = new URLSearchParams();
   if (opts?.sets?.length) params.set("sets", opts.sets.join(","));
   if (opts?.all) params.set("all", "true");
+  if (opts?.language) params.set("language", opts.language);
+  if (opts?.source) params.set("source", opts.source);
   const qs = params.toString();
   const raw = await request<Record<string, unknown>[]>(
     `/nodes/due${qs ? `?${qs}` : ""}`

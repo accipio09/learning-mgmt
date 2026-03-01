@@ -49,7 +49,13 @@
     "nodes": "Übungssätze",
     "chats": "Chatverlauf",
     "exchanges": "Austausche",
-    "noChats": "Noch keine Chats vorhanden"
+    "noChats": "Noch keine Chats vorhanden",
+    "briefs": "Briefings",
+    "briefCount": "Briefings",
+    "chatCount": "Chats",
+    "due": "fällig",
+    "study": "Lernen",
+    "history": "Verlauf"
   },
   "common": {
     "loading": "Laden...",

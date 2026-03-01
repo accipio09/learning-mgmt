@@ -8,6 +8,85 @@ import {
 
 const router = Router();
 
+// Get subjects (languages + briefs)
+router.get("/subjects", (_req, res) => {
+  const today = new Date().toISOString().split("T")[0];
+
+  const languageRows = db
+    .prepare(
+      `SELECT
+        ln.language as slug,
+        ln.language as language_code,
+        COUNT(ln.id) as node_count,
+        COUNT(CASE WHEN r.due_date <= ? THEN 1 END) as due_count
+      FROM learning_nodes ln
+      LEFT JOIN reviews r ON r.node_id = ln.id
+      GROUP BY ln.language
+      ORDER BY COUNT(ln.id) DESC`
+    )
+    .all(today) as Array<{
+    slug: string;
+    language_code: string;
+    node_count: number;
+    due_count: number;
+  }>;
+
+  const briefsMeta = db
+    .prepare("SELECT COUNT(*) as brief_count FROM briefs")
+    .get() as { brief_count: number };
+
+  const chatMeta = db
+    .prepare(
+      "SELECT COUNT(DISTINCT brief_id) as chat_count FROM chat_messages"
+    )
+    .get() as { chat_count: number };
+
+  const briefNodes = db
+    .prepare(
+      `SELECT
+        COUNT(ln.id) as node_count,
+        COUNT(CASE WHEN r.due_date <= ? THEN 1 END) as due_count
+      FROM learning_nodes ln
+      LEFT JOIN reviews r ON r.node_id = ln.id
+      WHERE ln.source_brief_id IS NOT NULL`
+    )
+    .get(today) as { node_count: number; due_count: number };
+
+  const subjects = [
+    {
+      slug: "briefs",
+      type: "briefs",
+      brief_count: briefsMeta.brief_count,
+      chat_count: chatMeta.chat_count,
+      node_count: briefNodes.node_count,
+      due_count: briefNodes.due_count,
+    },
+    ...languageRows.map((s) => ({
+      slug: s.slug,
+      type: "language" as const,
+      language_code: s.language_code,
+      node_count: s.node_count,
+      due_count: s.due_count,
+    })),
+  ];
+
+  res.json(subjects);
+});
+
+// Get all nodes for a language
+router.get("/by-language/:lang", (req, res) => {
+  const nodes = db
+    .prepare(
+      `SELECT ln.*, r.due_date, r.ease, r.interval, r.repetitions
+       FROM learning_nodes ln
+       LEFT JOIN reviews r ON r.node_id = ln.id
+       WHERE ln.language = ?
+       ORDER BY ln.id DESC`
+    )
+    .all(req.params.lang);
+  res.json(nodes);
+});
+
 // Get all node sets
 router.get("/sets", (_req, res) => {
   const sets = db
@@ -36,6 +115,8 @@ router.get("/due", (req, res) => {
   const today = new Date().toISOString().split("T")[0];
   const showAll = req.query.all === "true";
   const setsParam = req.query.sets as string | undefined;
+  const languageParam = req.query.language as string | undefined;
+  const sourceParam = req.query.source as string | undefined;
 
   const conditions: string[] = [];
   const params: (string | number)[] = [];
@@ -51,6 +132,15 @@ router.get("/due", (req, res) => {
       conditions.push(`n.set_id IN (${setIds.map(() => "?").join(",")})`);
       params.push(...setIds);
     }
+  }
+
+  if (languageParam) {
+    conditions.push("n.language = ?");
+    params.push(languageParam);
+  }
+
+  if (sourceParam === "briefs") {
+    conditions.push("n.source_brief_id IS NOT NULL");
   }
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";

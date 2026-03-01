@@ -49,7 +49,13 @@
     "nodes": "Conjuntos de ejercicios",
     "chats": "Historial de chat",
     "exchanges": "intercambios",
-    "noChats": "Aún no hay chats"
+    "noChats": "Aún no hay chats",
+    "briefs": "Informes",
+    "briefCount": "informes",
+    "chatCount": "chats",
+    "due": "pendientes",
+    "study": "Estudiar",
+    "history": "Historial"
   },
   "common": {
     "loading": "Cargando...",

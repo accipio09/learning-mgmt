@@ -1,34 +1,27 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader2, RotateCcw, Sparkles, Trophy, Check, X } from "lucide-react";
+import { useSearchParams, Navigate, useNavigate } from "react-router-dom";
+import { Loader2, RotateCcw, Trophy, Check, X, ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   getDueNodes,
   submitReview,
-  generateWeekNodes,
-  getNodeSets,
   type LearningNode,
-  type NodeSet,
   type FlashcardContent,
   type MultipleChoiceContent,
   type FreeResponseContent,
 } from "@/lib/api";
 
-function getISOWeek(date: Date): number {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
-  const week1 = new Date(d.getFullYear(), 0, 4);
-  return (
-    1 +
-    Math.round(
-      ((d.getTime() - week1.getTime()) / 86400000 -
-        3 +
-        ((week1.getDay() + 6) % 7)) /
-        7
-    )
-  );
-}
+const LANGUAGE_NAMES: Record<string, string> = {
+  de: "Deutsch",
+  ru: "Русский",
+  ja: "日本語",
+  uk: "Українська",
+  es: "Español",
+  fr: "Français",
+  vi: "Tiếng Việt",
+  en: "English",
+};
 
 // --- Flashcard Node ---
 function FlashcardNode({
@@ -64,14 +57,14 @@ function FlashcardNode({
         <div>
           {/* Front */}
           <div className="flashcard-front rounded-2xl p-8 flex flex-col items-center justify-center text-center glow-border">
-            <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
+            <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal">
               {language}
             </p>
             <p className="text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: content.front }} />
             {!flipped && (
               <button
                 onClick={handleFlip}
-                className="mt-6 flex items-center gap-1 text-sm text-primary hover:underline font-terminal text-glow"
+                className="mt-6 flex items-center gap-1 text-sm text-primary hover:underline font-terminal"
               >
                 <RotateCcw className="h-3 w-3" />
                 {t("study.showAnswer")}
@@ -81,7 +74,7 @@ function FlashcardNode({
 
           {/* Back */}
           <div className="flashcard-back rounded-2xl p-8 flex-col items-center justify-center text-center glow-border">
-            <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
+            <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal">
               {language}
             </p>
             <p className="text-lg leading-relaxed" dangerouslySetInnerHTML={{ __html: content.back }} />
@@ -118,10 +111,10 @@ function MultipleChoiceNode({
   return (
     <div className="w-full max-w-lg mx-auto">
       <div className="rounded-2xl p-8 glow-border">
-        <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
+        <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal">
           {language}
         </p>
-        <p className="text-lg leading-relaxed mb-6">{content.question}</p>
+        <p className="text-lg leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: content.question }} />
         <div className="space-y-3">
           {content.options.map((option, i) => {
             const isCorrect = i === content.correct_index;
@@ -144,7 +137,7 @@ function MultipleChoiceNode({
                 )}
               >
                 <div className="flex items-center justify-between">
-                  <span>{option}</span>
+                  <span dangerouslySetInnerHTML={{ __html: option }} />
                   {isRevealed && isCorrect && (
                     <Check className="h-4 w-4 text-success shrink-0" />
                   )}
@@ -183,10 +176,10 @@ function FreeResponseNode({
   return (
     <div className="w-full max-w-lg mx-auto">
       <div className="rounded-2xl p-8 glow-border">
-        <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
+        <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal">
           {language}
         </p>
-        <p className="text-lg leading-relaxed mb-6">{content.question}</p>
+        <p className="text-lg leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: content.question }} />
         <textarea
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
@@ -209,9 +202,7 @@ function FreeResponseNode({
             <p className="text-xs font-medium text-success mb-2 font-terminal">
               {t("study.expectedAnswer")}:
             </p>
-            <p className="text-sm leading-relaxed">
-              {content.expected_answer}
-            </p>
+            <p className="text-sm leading-relaxed" dangerouslySetInnerHTML={{ __html: content.expected_answer }} />
           </div>
         )}
       </div>
@@ -222,52 +213,45 @@ function FreeResponseNode({
 // --- Main Study Page ---
 export default function StudyPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const langFilter = searchParams.get("language");
+  const sourceFilter = searchParams.get("source");
+
+  // Redirect to library if no subject filter
+  if (!langFilter && !sourceFilter) {
+    return <Navigate to="/library" replace />;
+  }
+
   const [dueNodes, setDueNodes] = useState<LearningNode[]>([]);
-  const [sets, setSets] = useState<NodeSet[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
   const [reviewed, setReviewed] = useState(0);
-  const [selectedSets, setSelectedSets] = useState<Set<number>>(new Set());
   const [showAll, setShowAll] = useState(false);
 
+  const subjectLabel = langFilter
+    ? LANGUAGE_NAMES[langFilter] || langFilter
+    : t("library.briefs");
+
+  const backPath = langFilter
+    ? `/library/${langFilter}`
+    : "/library/briefs";
+
   useEffect(() => {
-    loadSets();
-  }, []);
+    loadCards();
+  }, [langFilter, sourceFilter]);
 
-  async function loadSets() {
-    setLoading(true);
-    try {
-      const nodeSets = await getNodeSets();
-      setSets(nodeSets);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadCards(
-    filterSets?: Set<number>,
-    filterAll?: boolean
-  ) {
-    const setsToUse = filterSets ?? selectedSets;
+  async function loadCards(filterAll?: boolean) {
     const allToUse = filterAll ?? showAll;
-    if (setsToUse.size === 0) {
-      setDueNodes([]);
-      setCurrentIndex(0);
-      setReviewed(0);
-      setRevealed(false);
-      return;
-    }
     setLoading(true);
     setCurrentIndex(0);
     setReviewed(0);
     setRevealed(false);
     try {
       const nodes = await getDueNodes({
-        sets: [...setsToUse],
+        language: langFilter || undefined,
+        source: sourceFilter || undefined,
         all: allToUse || undefined,
       });
       setDueNodes(nodes);
@@ -278,21 +262,10 @@ export default function StudyPage() {
     }
   }
 
-  function toggleSet(setId: number) {
-    const next = new Set(selectedSets);
-    if (next.has(setId)) {
-      next.delete(setId);
-    } else {
-      next.add(setId);
-    }
-    setSelectedSets(next);
-    loadCards(next);
-  }
-
   function toggleShowAll() {
     const next = !showAll;
     setShowAll(next);
-    loadCards(undefined, next);
+    loadCards(next);
   }
 
   async function handleRating(rating: number) {
@@ -315,22 +288,6 @@ export default function StudyPage() {
     }
   }
 
-  async function handleGenerateWeek() {
-    setGenerating(true);
-    try {
-      const now = new Date();
-      await generateWeekNodes({
-        year: now.getFullYear(),
-        week: getISOWeek(now),
-      });
-      await loadCards();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setGenerating(false);
-    }
-  }
-
   if (loading) {
     return (
       <div className="flex h-[calc(100vh-3.5rem)] items-center justify-center">
@@ -344,54 +301,18 @@ export default function StudyPage() {
 
   return (
     <div className="mx-auto max-w-4xl p-6 animate-fade-in-up">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold font-terminal text-glow">
-          {t("study.title")}
-        </h1>
+      <div className="mb-6">
         <button
-          onClick={handleGenerateWeek}
-          disabled={generating}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50 font-terminal btn-glow"
+          onClick={() => navigate(backPath)}
+          className="mb-2 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors font-terminal"
         >
-          {generating ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {t("study.generating")}
-            </>
-          ) : (
-            <>
-              <Sparkles className="h-4 w-4" />
-              {t("study.generateWeek")}
-            </>
-          )}
+          <ChevronLeft className="h-4 w-4" />
+          {subjectLabel}
         </button>
-      </div>
-
-      {/* Deck filters */}
-      {sets.length > 0 && (
-        <div className="mb-4 space-y-3">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {sets.map((set) => {
-              const isSelected = selectedSets.has(set.id);
-              return (
-                <button
-                  key={set.id}
-                  onClick={() => toggleSet(set.id)}
-                  className={cn(
-                    "shrink-0 rounded-lg px-3 py-2 text-xs font-terminal transition-colors",
-                    isSelected
-                      ? "bg-primary text-primary-foreground btn-glow"
-                      : "bg-card text-muted-foreground glow-border-cyan hover:text-accent"
-                  )}
-                >
-                  {set.name || `W${set.week}/${set.year}`}
-                  {set.node_count > 0 && (
-                    <span className="ml-1.5 opacity-60">{set.node_count}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold font-terminal text-foreground">
+            {subjectLabel}
+          </h1>
           <button
             onClick={toggleShowAll}
             className={cn(
@@ -404,17 +325,8 @@ export default function StudyPage() {
             {showAll ? t("study.showAllOn") : t("study.showAllOff")}
           </button>
         </div>
-      )}
+      </div>
 
-      {/* No deck selected — prompt */}
-      {selectedSets.size === 0 ? (
-        <div className="rounded-2xl p-16 text-center glow-border">
-          <p className="text-lg font-medium font-terminal text-muted-foreground">
-            {t("study.selectDecks")}
-          </p>
-        </div>
-      ) : (
-      <>
       {/* Due count / progress */}
       {total > 0 && currentNode && (
         <div className="mb-4">
@@ -493,7 +405,7 @@ export default function StudyPage() {
         </div>
       ) : (
         <div className="rounded-2xl p-16 text-center glow-border">
-          <Trophy className="mx-auto mb-4 h-16 w-16 text-success text-glow" />
+          <Trophy className="mx-auto mb-4 h-16 w-16 text-success" />
           <p className="text-lg font-medium font-terminal">
             {t("study.noDue")}
           </p>
@@ -503,8 +415,6 @@ export default function StudyPage() {
             </p>
           )}
         </div>
-      )}
-      </>
       )}
     </div>
   );

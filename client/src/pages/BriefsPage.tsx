@@ -87,10 +87,11 @@ export default function BriefsPage() {
           <h1 className="text-2xl font-bold leading-tight font-terminal text-glow">
             {brief.title || brief.filename}
           </h1>
-          <div className="mt-2 flex items-center gap-3 text-sm text-muted-foreground font-terminal">
+          <div className="mt-2 text-sm text-muted-foreground font-terminal">
             <span>{brief.date}</span>
-            <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-medium uppercase text-accent border border-accent/20">
-              {brief.language}
+            <span className="mx-2">·</span>
+            <span className="capitalize">
+              {new Date(brief.date + "T00:00:00").toLocaleDateString(brief.language, { weekday: "long" })}
             </span>
           </div>
         </div>
