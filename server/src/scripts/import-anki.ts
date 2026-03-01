@@ -156,6 +156,15 @@ interface ImportCard {
   dueDate: string;
 }
 
+function cleanHtmlEntities(s: string): string {
+  return s
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"');
+}
+
 const importCards: ImportCard[] = [];
 let skippedImages = 0;
 let skippedUnknownDeck = 0;
@@ -165,8 +174,8 @@ for (const card of cards) {
   if (!note) continue;
 
   const fields = note.flds.split("\x1f");
-  const front = fields[0] ?? "";
-  const back = fields[1] ?? "";
+  const front = cleanHtmlEntities(fields[0] ?? "");
+  const back = cleanHtmlEntities(fields[1] ?? "");
 
   // Skip cards with images
   if (front.includes("<img") || back.includes("<img")) {

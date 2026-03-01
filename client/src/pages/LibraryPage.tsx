@@ -384,12 +384,12 @@ export default function LibraryPage() {
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   )}
                   <span className="font-medium font-terminal text-accent text-glow-cyan">
-                    W{set.week}/{set.year}
+                    {set.name || `W${set.week}/${set.year}`}
                   </span>
                 </div>
-                {nodes && (
+                {set.node_count > 0 && (
                   <span className="rounded-md bg-secondary px-2 py-0.5 text-xs font-terminal text-muted-foreground">
-                    {nodes.length} {t("study.nodes")}
+                    {set.node_count} {t("study.nodes")}
                   </span>
                 )}
               </button>

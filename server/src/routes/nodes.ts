@@ -11,7 +11,13 @@ const router = Router();
 // Get all node sets
 router.get("/sets", (_req, res) => {
   const sets = db
-    .prepare("SELECT * FROM node_sets ORDER BY year DESC, week DESC")
+    .prepare(
+      `SELECT ns.*, COUNT(ln.id) as node_count
+       FROM node_sets ns
+       LEFT JOIN learning_nodes ln ON ln.set_id = ns.id
+       GROUP BY ns.id
+       ORDER BY ns.year DESC, ns.week DESC`
+    )
     .all();
   res.json(sets);
 });
@@ -280,7 +286,7 @@ function getOrCreateSet(year: number, week: number) {
   if (existing) return existing;
 
   const result = db
-    .prepare("INSERT INTO node_sets (year, week) VALUES (?, ?)")
+    .prepare("INSERT INTO node_sets (year, week, name) VALUES (?, ?, 'Briefs')")
     .run(year, week);
   return { id: result.lastInsertRowid as number };
 }
