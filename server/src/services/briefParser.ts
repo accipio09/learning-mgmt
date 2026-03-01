@@ -46,14 +46,15 @@ export function parseBriefMarkdown(content: string): ParsedBrief {
       continue;
     }
 
-    // h2 or h3 = section heading
-    if (trimmed.startsWith("## ") || trimmed.startsWith("### ")) {
+    // h2, h3, or ◆ = section heading
+    const sectionMatch = trimmed.match(/^(?:#{2,3}\s+|◆\s*)(.+)/);
+    if (sectionMatch) {
       flushBlock();
       if (currentSection && currentSection.bullets.length > 0) {
         sections.push(currentSection);
       }
       currentSection = {
-        heading: trimmed.replace(/^#{2,3} /, ""),
+        heading: sectionMatch[1],
         bullets: [],
       };
       continue;
