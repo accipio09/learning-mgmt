@@ -11,18 +11,24 @@ import {
 } from "@/lib/api";
 import BriefChat from "@/components/BriefChat";
 
-const mdLink = {
-  a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-accent underline break-all hover:text-glow-cyan hover:opacity-80"
-    >
-      {children}
-    </a>
-  ),
-};
+function makeMdComponents(url: string | null) {
+  return {
+    a: () => null,
+    strong: ({ children }: { children?: React.ReactNode }) =>
+      url ? (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-bold text-foreground hover:text-primary transition-colors"
+        >
+          {children}
+        </a>
+      ) : (
+        <strong>{children}</strong>
+      ),
+  };
+}
 
 export default function BriefsPage() {
   const { t } = useTranslation();
@@ -93,25 +99,31 @@ export default function BriefsPage() {
         {brief.structure.map((section, si) => (
           <div key={si} className="mb-8">
             <h2 className="mb-4 text-lg font-semibold text-primary font-terminal">
-              <span className="text-primary/50 mr-1">&gt;</span>
+              <span className="text-primary/50 mr-1">&mdash;</span>
               {section.heading}
             </h2>
             <div className="space-y-1">
-              {section.bullets.map((bullet, bi) => {
+              {(() => {
+                const sectionUrl = section.bullets
+                  .map((b) => b.match(/https?:\/\/\S+/))
+                  .find(Boolean)?.[0] ?? null;
+                return section.bullets.map((bullet, bi) => {
                 const isCreated = createdBullets.has(bullet);
                 const isGenerating = generatingBullet === bullet;
+                const bulletUrl = bullet.match(/https?:\/\/\S+/)?.[0] ?? sectionUrl;
+                const clean = bullet.replace(/\s*🔗?\s*https?:\/\/\S+/g, "");
 
                 return (
                   <div
                     key={bi}
-                    className="group rounded-lg px-3 py-1.5 transition-all glow-border"
+                    className="group rounded-lg px-3 py-1.5 transition-all"
                   >
                     <div className="prose-brief text-secondary-foreground leading-relaxed">
                       <ReactMarkdown
                         remarkPlugins={[remarkGfm]}
-                        components={mdLink}
+                        components={makeMdComponents(bulletUrl)}
                       >
-                        {bullet}
+                        {clean}
                       </ReactMarkdown>
                     </div>
                     <div className="mt-1 flex justify-end">
@@ -147,7 +159,8 @@ export default function BriefsPage() {
                     </div>
                   </div>
                 );
-              })}
+              });
+              })()}
             </div>
           </div>
         ))}

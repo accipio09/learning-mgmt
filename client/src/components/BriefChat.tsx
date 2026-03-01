@@ -75,15 +75,21 @@ export default function BriefChat({ briefId }: { briefId: number }) {
   return (
     <>
       {/* FAB button */}
-      <button
-        onClick={() => setOpen(true)}
+      <div
         className={cn(
-          "fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:scale-105 btn-glow",
-          open && "pointer-events-none opacity-0"
+          "fixed bottom-6 left-0 right-0 z-50 pointer-events-none",
+          open && "opacity-0"
         )}
       >
-        <MessageSquare className="h-5 w-5" />
-      </button>
+        <div className="mx-auto max-w-4xl px-6 flex justify-end">
+          <button
+            onClick={() => setOpen(true)}
+            className="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:scale-105 btn-glow"
+          >
+            <MessageSquare className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
 
       {/* Backdrop */}
       {open && (
@@ -166,7 +172,7 @@ export default function BriefChat({ briefId }: { briefId: number }) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              placeholder={`$ ${t("chat.placeholder")}`}
+              placeholder={t("chat.placeholder")}
               className="flex-1 rounded-lg border border-border bg-secondary px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary font-terminal"
             />
             <button

@@ -8,7 +8,7 @@ import LibraryPage from "./pages/LibraryPage";
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="crt-overlay">
+      <div>
         <NavBar />
         <main className="pt-14">
           <Routes>
