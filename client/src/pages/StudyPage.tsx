@@ -57,13 +57,13 @@ function FlashcardNode({
       <div
         onClick={handleFlip}
         className={cn(
-          "relative w-full max-w-lg cursor-pointer perspective-[1000px] card-float",
+          "relative w-full max-w-lg cursor-pointer card-float",
           flipped && "flashcard-flipped"
         )}
       >
-        <div className="flashcard-inner relative min-h-[300px]">
+        <div>
           {/* Front */}
-          <div className="flashcard-front absolute inset-0 rounded-2xl p-8 flex flex-col items-center justify-center text-center glow-border">
+          <div className="flashcard-front rounded-2xl p-8 flex flex-col items-center justify-center text-center glow-border">
             <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
               {language}
             </p>
@@ -80,7 +80,7 @@ function FlashcardNode({
           </div>
 
           {/* Back */}
-          <div className="flashcard-back absolute inset-0 rounded-2xl p-8 flex flex-col items-center justify-center text-center glow-border">
+          <div className="flashcard-back rounded-2xl p-8 flex-col items-center justify-center text-center glow-border">
             <p className="text-xs font-medium text-accent uppercase tracking-wider mb-4 font-terminal text-glow-cyan">
               {language}
             </p>
@@ -440,6 +440,7 @@ export default function StudyPage() {
         <div className={cn("flex flex-col items-center", revealed && "pb-20")}>
           {currentNode.node_type === "flashcard" && (
             <FlashcardNode
+              key={currentNode.id}
               content={currentNode.content as FlashcardContent}
               language={currentNode.language}
               sourceBullet={currentNode.source_bullet}
@@ -448,6 +449,7 @@ export default function StudyPage() {
           )}
           {currentNode.node_type === "multiple_choice" && (
             <MultipleChoiceNode
+              key={currentNode.id}
               content={currentNode.content as MultipleChoiceContent}
               language={currentNode.language}
               onReveal={() => setRevealed(true)}
@@ -455,6 +457,7 @@ export default function StudyPage() {
           )}
           {currentNode.node_type === "free_response" && (
             <FreeResponseNode
+              key={currentNode.id}
               content={currentNode.content as FreeResponseContent}
               language={currentNode.language}
               onReveal={() => setRevealed(true)}
