@@ -57,6 +57,12 @@
     "study": "Вчити",
     "history": "Історія"
   },
+  "landing": {
+    "clickToStudy": "Натисніть, щоб повторити {{lang}}",
+    "clickForBrief": "Натисніть, щоб побачити зведення дня",
+    "todaysBrief": "Зведення дня",
+    "clickToRead": "Натисніть, щоб прочитати"
+  },
   "common": {
     "loading": "Завантаження...",
     "error": "Помилка",

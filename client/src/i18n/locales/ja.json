@@ -57,6 +57,12 @@
     "study": "学習する",
     "history": "履歴"
   },
+  "landing": {
+    "clickToStudy": "クリックして{{lang}}を復習",
+    "clickForBrief": "クリックして今日のブリーフを表示",
+    "todaysBrief": "今日のブリーフ",
+    "clickToRead": "クリックして読む"
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "エラー",

@@ -57,6 +57,12 @@
     "study": "Étudier",
     "history": "Historique"
   },
+  "landing": {
+    "clickToStudy": "Cliquez pour réviser {{lang}}",
+    "clickForBrief": "Cliquez pour le briefing du jour",
+    "todaysBrief": "Briefing du jour",
+    "clickToRead": "Cliquez pour lire"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Erreur",
