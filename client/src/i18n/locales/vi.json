@@ -57,6 +57,12 @@
     "study": "Học",
     "history": "Lịch sử"
   },
+  "landing": {
+    "clickToStudy": "Nhấp để ôn {{lang}}",
+    "clickForBrief": "Nhấp để xem bản tin hôm nay",
+    "todaysBrief": "Bản tin hôm nay",
+    "clickToRead": "Nhấp để đọc"
+  },
   "common": {
     "loading": "Đang tải...",
     "error": "Lỗi",

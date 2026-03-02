@@ -1,10 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { BookOpen, Library } from "lucide-react";
+import { Box, Library } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function NavBar() {
   const links = [
-    { to: "/", icon: BookOpen },
+    { to: "/", icon: Box },
     { to: "/library", icon: Library },
   ];
 
