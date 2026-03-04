@@ -19,6 +19,10 @@ import {
 } from "@/lib/api";
 import BriefChat from "@/components/BriefChat";
 
+function cleanUrl(raw: string): string {
+  return raw.replace(/[).,;:]+$/, "");
+}
+
 function makeMdComponents(url: string | null) {
   return {
     a: () => null,
@@ -133,8 +137,9 @@ export default function BriefDetailPage() {
                 return section.bullets.map((bullet, bi) => {
                   const isCreated = createdBullets.has(bullet);
                   const isGenerating = generatingBullet === bullet;
-                  const bulletUrl =
+                  const rawUrl =
                     bullet.match(/https?:\/\/\S+/)?.[0] ?? sectionUrl;
+                  const bulletUrl = rawUrl ? cleanUrl(rawUrl) : null;
                   const clean = bullet.replace(
                     /\s*🔗?\s*https?:\/\/\S+/g,
                     ""
