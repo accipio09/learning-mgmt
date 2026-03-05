@@ -63,6 +63,21 @@
     "todaysBrief": "今日のブリーフ",
     "clickToRead": "クリックして読む"
   },
+  "card": {
+    "title": "新しいフラッシュカード",
+    "manual": "手動",
+    "ai": "AI生成",
+    "front": "表",
+    "back": "裏",
+    "frontPlaceholder": "問題やプロンプト...",
+    "backPlaceholder": "答え...",
+    "sourceText": "テキスト",
+    "sourcePlaceholder": "テキストを貼り付け — AIがカードを生成します...",
+    "language": "言語",
+    "cancel": "キャンセル",
+    "create": "作成",
+    "generate": "生成"
+  },
   "common": {
     "loading": "読み込み中...",
     "error": "エラー",

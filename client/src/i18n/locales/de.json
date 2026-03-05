@@ -63,6 +63,21 @@
     "todaysBrief": "Heutiges Briefing",
     "clickToRead": "Klicken zum Lesen"
   },
+  "card": {
+    "title": "Neue Karteikarte",
+    "manual": "Manuell",
+    "ai": "KI-Generierung",
+    "front": "Vorderseite",
+    "back": "Rückseite",
+    "frontPlaceholder": "Frage oder Stichwort...",
+    "backPlaceholder": "Antwort...",
+    "sourceText": "Quelltext",
+    "sourcePlaceholder": "Text einfügen — KI erstellt eine Karteikarte daraus...",
+    "language": "Sprache",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "generate": "Generieren"
+  },
   "common": {
     "loading": "Laden...",
     "error": "Fehler",

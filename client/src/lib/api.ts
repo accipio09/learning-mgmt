@@ -212,6 +212,27 @@ export async function createNodeFromBullet(data: {
   });
 }
 
+export function createFlashcardManual(data: {
+  front: string;
+  back: string;
+  language: string;
+}): Promise<LearningNode> {
+  return request("/nodes/flashcard", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function createFlashcardFromText(data: {
+  text: string;
+  language: string;
+}): Promise<LearningNode> {
+  return request("/nodes/flashcard/generate", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 export function generateWeekNodes(data: {
   year: number;
   week: number;

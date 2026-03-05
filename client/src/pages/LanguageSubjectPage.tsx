@@ -8,8 +8,10 @@ import {
   GraduationCap,
   Loader2,
   BookOpen,
+  Plus,
 } from "lucide-react";
 import { getNodesByLanguage, type LearningNode } from "@/lib/api";
+import CreateFlashcardDialog from "@/components/CreateFlashcardDialog";
 import NodePreview, {
   typeIcons,
   typeLabels,
@@ -37,6 +39,7 @@ export default function LanguageSubjectPage({
   const [nodes, setNodes] = useState<LearningNode[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedNode, setExpandedNode] = useState<number | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const langName = LANGUAGE_NAMES[language] || language;
 
@@ -75,13 +78,21 @@ export default function LanguageSubjectPage({
             {nodes.length} {t("study.nodes")}
           </p>
         </div>
-        <button
-          onClick={() => navigate(`/study?language=${language}`)}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground btn-glow font-terminal"
-        >
-          <GraduationCap className="h-4 w-4" />
-          {t("library.study")}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors font-terminal"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => navigate(`/study?language=${language}`)}
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground btn-glow font-terminal"
+          >
+            <GraduationCap className="h-4 w-4" />
+            {t("library.study")}
+          </button>
+        </div>
       </div>
 
       {/* Nodes list */}
@@ -139,6 +150,13 @@ export default function LanguageSubjectPage({
           })}
         </div>
       )}
+
+      <CreateFlashcardDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        language={language}
+        onCreated={(node) => setNodes((prev) => [node, ...prev])}
+      />
     </div>
   );
 }

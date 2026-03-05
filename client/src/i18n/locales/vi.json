@@ -63,6 +63,21 @@
     "todaysBrief": "Bản tin hôm nay",
     "clickToRead": "Nhấp để đọc"
   },
+  "card": {
+    "title": "Thẻ mới",
+    "manual": "Thủ công",
+    "ai": "Tạo bằng AI",
+    "front": "Mặt trước",
+    "back": "Mặt sau",
+    "frontPlaceholder": "Câu hỏi hoặc gợi ý...",
+    "backPlaceholder": "Đáp án...",
+    "sourceText": "Văn bản nguồn",
+    "sourcePlaceholder": "Dán văn bản — AI sẽ tạo thẻ từ nội dung...",
+    "language": "Ngôn ngữ",
+    "cancel": "Hủy",
+    "create": "Tạo",
+    "generate": "Tạo bằng AI"
+  },
   "common": {
     "loading": "Đang tải...",
     "error": "Lỗi",

@@ -339,6 +339,113 @@ router.post("/generate-week", async (req, res) => {
   }
 });
 
+// Create flashcard manually (no brief required)
+router.post("/flashcard", (req, res) => {
+  try {
+    const { front, back, language } = req.body;
+
+    if (
+      typeof front !== "string" || !front.trim() ||
+      typeof back !== "string" || !back.trim() ||
+      typeof language !== "string" || !language.trim()
+    ) {
+      return res.status(400).json({
+        error: "front, back (non-empty strings) and language are required",
+      });
+    }
+
+    const now = new Date();
+    const week = getISOWeek(now);
+    const year = now.getFullYear();
+    const set = getOrCreateSet(year, week);
+
+    const content = JSON.stringify({ front: front.trim(), back: back.trim() });
+
+    const result = db
+      .prepare(
+        `INSERT INTO learning_nodes (set_id, node_type, content, language, source_brief_id, source_bullet, created_via)
+         VALUES (?, 'flashcard', ?, ?, NULL, NULL, 'manual')`
+      )
+      .run(set.id, content, language);
+
+    const today = now.toISOString().split("T")[0];
+    db.prepare(`INSERT INTO reviews (node_id, due_date) VALUES (?, ?)`).run(
+      result.lastInsertRowid,
+      today
+    );
+
+    res.json({
+      id: result.lastInsertRowid,
+      node_type: "flashcard",
+      content: { front: front.trim(), back: back.trim() },
+      language,
+      created_via: "manual",
+    });
+  } catch (err) {
+    console.error("Error creating flashcard:", err);
+    res.status(500).json({ error: "Failed to create flashcard" });
+  }
+});
+
+// Generate flashcard from free text via AI
+router.post("/flashcard/generate", async (req, res) => {
+  try {
+    const { text, language } = req.body;
+
+    if (
+      typeof text !== "string" || !text.trim() ||
+      typeof language !== "string" || !language.trim()
+    ) {
+      return res.status(400).json({
+        error: "text and language are required",
+      });
+    }
+
+    const node = await generateNodeFromBullet(
+      text.trim(),
+      "User Input",
+      language,
+      "flashcard"
+    );
+
+    const now = new Date();
+    const week = getISOWeek(now);
+    const year = now.getFullYear();
+    const set = getOrCreateSet(year, week);
+
+    const result = db
+      .prepare(
+        `INSERT INTO learning_nodes (set_id, node_type, content, language, source_brief_id, source_bullet, created_via)
+         VALUES (?, ?, ?, ?, NULL, ?, 'manual')`
+      )
+      .run(
+        set.id,
+        node.node_type,
+        JSON.stringify(node.content),
+        language,
+        text.trim()
+      );
+
+    const today = now.toISOString().split("T")[0];
+    db.prepare(`INSERT INTO reviews (node_id, due_date) VALUES (?, ?)`).run(
+      result.lastInsertRowid,
+      today
+    );
+
+    res.json({
+      id: result.lastInsertRowid,
+      node_type: node.node_type,
+      content: node.content,
+      language,
+      source_bullet: text.trim(),
+      created_via: "manual",
+    });
+  } catch (err) {
+    console.error("Error generating flashcard:", err);
+    res.status(500).json({ error: "Failed to generate flashcard" });
+  }
+});
+
 // Submit SM-2 review rating
 router.post("/review", (req, res) => {
   const { nodeId, rating } = req.body;

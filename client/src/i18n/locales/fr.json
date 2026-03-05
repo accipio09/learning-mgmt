@@ -63,6 +63,21 @@
     "todaysBrief": "Briefing du jour",
     "clickToRead": "Cliquez pour lire"
   },
+  "card": {
+    "title": "Nouvelle carte",
+    "manual": "Manuel",
+    "ai": "Générer par IA",
+    "front": "Recto",
+    "back": "Verso",
+    "frontPlaceholder": "Question ou indice...",
+    "backPlaceholder": "Réponse...",
+    "sourceText": "Texte source",
+    "sourcePlaceholder": "Collez un texte — l'IA créera une carte...",
+    "language": "Langue",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "generate": "Générer"
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Erreur",

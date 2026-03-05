@@ -63,6 +63,21 @@
     "todaysBrief": "Informe de hoy",
     "clickToRead": "Haz clic para leer"
   },
+  "card": {
+    "title": "Nueva tarjeta",
+    "manual": "Manual",
+    "ai": "Generar con IA",
+    "front": "Anverso",
+    "back": "Reverso",
+    "frontPlaceholder": "Pregunta o pista...",
+    "backPlaceholder": "Respuesta...",
+    "sourceText": "Texto fuente",
+    "sourcePlaceholder": "Pega un texto — la IA creará una tarjeta...",
+    "language": "Idioma",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "generate": "Generar"
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",

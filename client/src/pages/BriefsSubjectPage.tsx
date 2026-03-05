@@ -11,6 +11,7 @@ import {
   Loader2,
   GraduationCap,
   MessageSquare,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -21,6 +22,7 @@ import {
   type ChatMessage,
   type ChatSummary,
 } from "@/lib/api";
+import CreateFlashcardDialog from "@/components/CreateFlashcardDialog";
 
 const mdLink = {
   a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
@@ -52,6 +54,7 @@ export default function BriefsSubjectPage() {
     Record<number, ChatMessage[]>
   >({});
   const [loadingChat, setLoadingChat] = useState<number | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     getBriefs()
@@ -105,13 +108,21 @@ export default function BriefsSubjectPage() {
             {t("library.briefs")}
           </h1>
         </div>
-        <button
-          onClick={() => navigate("/study?source=briefs")}
-          className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground btn-glow font-terminal"
-        >
-          <GraduationCap className="h-4 w-4" />
-          {t("library.study")}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary/50 transition-colors font-terminal"
+          >
+            <Plus className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => navigate("/study?source=briefs")}
+            className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground btn-glow font-terminal"
+          >
+            <GraduationCap className="h-4 w-4" />
+            {t("library.study")}
+          </button>
+        </div>
       </div>
 
       {/* Tab toggle */}
@@ -312,6 +323,12 @@ export default function BriefsSubjectPage() {
           </div>
         </>
       )}
+
+      <CreateFlashcardDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onCreated={() => {}}
+      />
     </div>
   );
 }
