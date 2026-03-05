@@ -124,8 +124,8 @@ export default function BriefDetailPage() {
         {/* Sections */}
         {brief.structure.map((section, si) => (
           <div key={si} className="mb-8">
-            <h2 className="mb-4 text-lg font-semibold text-primary font-terminal">
-              <span className="text-primary/50 mr-1">&mdash;</span>
+            <h2 className="mb-4 text-lg font-semibold text-foreground font-terminal">
+              <span className="text-foreground/50 mr-1">&mdash;</span>
               {section.heading}
             </h2>
             <div className="space-y-1">
@@ -150,7 +150,7 @@ export default function BriefDetailPage() {
                       key={bi}
                       className="group rounded-lg px-3 py-1.5 transition-all"
                     >
-                      <div className="prose-brief text-secondary-foreground leading-relaxed">
+                      <div className="prose-brief text-foreground leading-relaxed">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           components={makeMdComponents(bulletUrl)}
@@ -202,8 +202,8 @@ export default function BriefDetailPage() {
         {/* Chat Log */}
         {chatLog.length > 0 && (
           <div className="mt-8 border-t border-border pt-6">
-            <h2 className="mb-4 text-lg font-semibold text-primary font-terminal">
-              <span className="text-primary/50 mr-1">&mdash;</span>
+            <h2 className="mb-4 text-lg font-semibold text-foreground font-terminal">
+              <span className="text-foreground/50 mr-1">&mdash;</span>
               {t("chat.log")}{" "}
               <span className="text-sm font-normal text-muted-foreground">
                 ({Math.floor(chatLog.length / 2)} {t("library.exchanges")})

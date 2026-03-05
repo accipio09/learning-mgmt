@@ -109,7 +109,7 @@ body {
 
 /* ===== PROSE — BRIEF CONTENT ===== */
 .prose-brief p {
-  color: var(--color-secondary-foreground);
+  color: var(--color-foreground);
   line-height: 1.6;
   margin-bottom: 0.25rem;
 }
@@ -126,7 +126,7 @@ body {
 .prose-brief li {
   position: relative;
   padding: 0.25rem 0 0.25rem 1.25rem;
-  color: var(--color-secondary-foreground);
+  color: var(--color-foreground);
   line-height: 1.6;
 }
 
@@ -134,7 +134,7 @@ body {
   content: "\2014";
   position: absolute;
   left: 0;
-  color: var(--color-primary);
+  color: var(--color-foreground);
   font-weight: normal;
 }
 

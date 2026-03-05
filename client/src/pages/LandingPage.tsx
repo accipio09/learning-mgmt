@@ -408,8 +408,8 @@ export default function LandingPage() {
             {/* Sections with per-bullet node buttons */}
             {brief.structure.map((section, si) => (
               <div key={si} className="mb-8">
-                <h2 className="mb-4 text-lg font-semibold text-primary font-terminal">
-                  <span className="text-primary/50 mr-1">&mdash;</span>
+                <h2 className="mb-4 text-lg font-semibold text-foreground font-terminal">
+                  <span className="text-foreground/50 mr-1">&mdash;</span>
                   {section.heading}
                 </h2>
                 <div className="space-y-1">
@@ -434,7 +434,7 @@ export default function LandingPage() {
                           key={bi}
                           className="group rounded-lg px-3 py-1.5 transition-all"
                         >
-                          <div className="prose-brief text-secondary-foreground leading-relaxed">
+                          <div className="prose-brief text-foreground leading-relaxed">
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
                               components={makeMdComponents(bulletUrl)}
