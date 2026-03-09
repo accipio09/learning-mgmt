@@ -23,6 +23,7 @@ import {
   type ChatSummary,
 } from "@/lib/api";
 import CreateFlashcardDialog from "@/components/CreateFlashcardDialog";
+import MonthlyActivityChart from "@/components/MonthlyActivityChart";
 
 const mdLink = {
   a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
@@ -124,6 +125,8 @@ export default function BriefsSubjectPage() {
           </button>
         </div>
       </div>
+
+      <MonthlyActivityChart source="briefs" />
 
       {/* Tab toggle */}
       <div className="mb-6 flex gap-1 rounded-lg bg-secondary/50 p-1 w-fit">

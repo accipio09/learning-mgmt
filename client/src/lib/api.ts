@@ -244,6 +244,27 @@ export function generateWeekNodes(data: {
   });
 }
 
+// --- Activity ---
+
+export interface DayActivity {
+  date: string;
+  count: number;
+}
+
+export async function getRecentActivity(opts?: {
+  language?: string;
+  source?: string;
+}): Promise<DayActivity[]> {
+  const params = new URLSearchParams();
+  if (opts?.language) params.set("language", opts.language);
+  if (opts?.source) params.set("source", opts.source);
+  const qs = params.toString();
+  const data = await request<{ days: DayActivity[] }>(
+    `/nodes/activity/recent${qs ? `?${qs}` : ""}`
+  );
+  return data.days;
+}
+
 export function submitReview(
   nodeId: number,
   rating: number

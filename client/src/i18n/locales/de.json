@@ -78,6 +78,12 @@
     "create": "Erstellen",
     "generate": "Generieren"
   },
+  "activity": {
+    "activities": "Aktivitäten",
+    "activeDays": "aktive Tage",
+    "day": "Tag",
+    "last7days": "Letzte 7 Tage"
+  },
   "common": {
     "loading": "Laden...",
     "error": "Fehler",

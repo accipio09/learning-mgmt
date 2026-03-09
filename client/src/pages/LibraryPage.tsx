@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Loader2, FileText, Languages } from "lucide-react";
 import { getSubjects, type Subject } from "@/lib/api";
+import MonthlyActivityChart from "@/components/MonthlyActivityChart";
 
 const LANGUAGE_NAMES: Record<string, string> = {
   de: "Deutsch",
@@ -41,6 +42,8 @@ export default function LibraryPage() {
       <h1 className="mb-6 text-2xl font-bold font-terminal text-foreground">
         {t("nav.library")}
       </h1>
+
+      <MonthlyActivityChart />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {subjects.map((subject) => {

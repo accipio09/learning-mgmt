@@ -61,11 +61,24 @@ export function initializeDatabase() {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
 
+    CREATE TABLE IF NOT EXISTS review_log (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      node_id INTEGER NOT NULL REFERENCES learning_nodes(id),
+      rating INTEGER NOT NULL,
+      ease_after REAL NOT NULL,
+      interval_after INTEGER NOT NULL,
+      repetitions_after INTEGER NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_briefs_date ON briefs(date);
     CREATE INDEX IF NOT EXISTS idx_learning_nodes_set ON learning_nodes(set_id);
     CREATE INDEX IF NOT EXISTS idx_learning_nodes_type ON learning_nodes(node_type);
     CREATE INDEX IF NOT EXISTS idx_reviews_due ON reviews(due_date);
     CREATE INDEX IF NOT EXISTS idx_chat_messages_brief ON chat_messages(brief_id);
+    CREATE INDEX IF NOT EXISTS idx_review_log_created ON review_log(created_at);
+    CREATE INDEX IF NOT EXISTS idx_review_log_node ON review_log(node_id);
+    CREATE INDEX IF NOT EXISTS idx_chat_messages_created ON chat_messages(created_at);
   `);
 
   // Migration: add name column to node_sets
@@ -77,6 +90,38 @@ export function initializeDatabase() {
   if (!hasNameCol) {
     db.exec("ALTER TABLE node_sets ADD COLUMN name TEXT");
   }
+
+  // Migration: add created_at column to learning_nodes
+  const hasCreatedAt = db
+    .prepare("PRAGMA table_info(learning_nodes)")
+    .all()
+    .some((col: any) => col.name === "created_at");
+
+  if (!hasCreatedAt) {
+    db.exec(`
+      ALTER TABLE learning_nodes ADD COLUMN created_at TEXT;
+
+      -- Backfill from node_sets.generated_at
+      UPDATE learning_nodes
+      SET created_at = (
+        SELECT ns.generated_at FROM node_sets ns WHERE ns.id = learning_nodes.set_id
+      )
+      WHERE set_id IS NOT NULL;
+
+      -- Auto-fill created_at on future inserts
+      CREATE TRIGGER IF NOT EXISTS set_learning_node_created_at
+      AFTER INSERT ON learning_nodes
+      WHEN NEW.created_at IS NULL
+      BEGIN
+        UPDATE learning_nodes SET created_at = datetime('now') WHERE id = NEW.id;
+      END;
+    `);
+  }
+
+  // Index on created_at — must be after the migration that adds the column
+  db.exec(
+    "CREATE INDEX IF NOT EXISTS idx_learning_nodes_created ON learning_nodes(created_at)"
+  );
 }
 
 function migrateToNodes() {

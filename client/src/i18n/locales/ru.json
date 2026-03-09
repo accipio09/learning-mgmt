@@ -78,6 +78,12 @@
     "create": "Создать",
     "generate": "Сгенерировать"
   },
+  "activity": {
+    "activities": "действий",
+    "activeDays": "активных дней",
+    "day": "День",
+    "last7days": "Последние 7 дней"
+  },
   "common": {
     "loading": "Загрузка...",
     "error": "Ошибка",

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { getNodesByLanguage, type LearningNode } from "@/lib/api";
 import CreateFlashcardDialog from "@/components/CreateFlashcardDialog";
+import MonthlyActivityChart from "@/components/MonthlyActivityChart";
 import NodePreview, {
   typeIcons,
   typeLabels,
@@ -94,6 +95,8 @@ export default function LanguageSubjectPage({
           </button>
         </div>
       </div>
+
+      <MonthlyActivityChart language={language} />
 
       {/* Nodes list */}
       {nodes.length === 0 ? (

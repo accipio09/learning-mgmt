@@ -78,6 +78,12 @@
     "create": "Tạo",
     "generate": "Tạo bằng AI"
   },
+  "activity": {
+    "activities": "hoạt động",
+    "activeDays": "ngày hoạt động",
+    "day": "Ngày",
+    "last7days": "7 ngày qua"
+  },
   "common": {
     "loading": "Đang tải...",
     "error": "Lỗi",

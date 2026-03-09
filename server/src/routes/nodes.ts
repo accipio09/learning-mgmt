@@ -481,20 +481,112 @@ router.post("/review", (req, res) => {
     rating
   );
 
-  db.prepare(
-    `UPDATE reviews
-     SET ease = ?, interval = ?, repetitions = ?, due_date = ?, last_reviewed = ?
-     WHERE node_id = ?`
-  ).run(
-    updated.ease,
-    updated.interval,
-    updated.repetitions,
-    updated.dueDate,
-    new Date().toISOString(),
-    nodeId
-  );
+  const now = new Date().toISOString();
+
+  const updateAndLog = db.transaction(() => {
+    db.prepare(
+      `UPDATE reviews
+       SET ease = ?, interval = ?, repetitions = ?, due_date = ?, last_reviewed = ?
+       WHERE node_id = ?`
+    ).run(updated.ease, updated.interval, updated.repetitions, updated.dueDate, now, nodeId);
+
+    db.prepare(
+      `INSERT INTO review_log (node_id, rating, ease_after, interval_after, repetitions_after, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    ).run(nodeId, rating, updated.ease, updated.interval, updated.repetitions, now);
+  });
+  updateAndLog();
 
   res.json({ nodeId, ...updated });
+});
+
+// Recent activity data (last 7 days)
+router.get("/activity/recent", (req, res) => {
+  const languageParam = req.query.language as string | undefined;
+  const sourceParam = req.query.source as string | undefined;
+
+  // Last 7 days: today + 6 days back
+  const now = new Date();
+  const sixDaysAgo = new Date(now);
+  sixDaysAgo.setDate(sixDaysAgo.getDate() - 6);
+  const from = sixDaysAgo.toISOString().split("T")[0];
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const to = tomorrow.toISOString().split("T")[0];
+
+  // Build parameterized queries for each activity type
+  const reviewParams: (string | number)[] = [from, to];
+  let reviewJoin = "";
+  const reviewFilters = ["rl.created_at >= ? AND rl.created_at < ?"];
+
+  const nodeParams: (string | number)[] = [from, to];
+  const nodeFilters = ["created_at >= ? AND created_at < ?"];
+
+  if (languageParam || sourceParam) {
+    reviewJoin = "JOIN learning_nodes ln ON ln.id = rl.node_id";
+  }
+  if (languageParam) {
+    reviewFilters.push("ln.language = ?");
+    reviewParams.push(languageParam);
+    reviewFilters.push("ln.source_brief_id IS NULL");
+    nodeFilters.push("language = ?");
+    nodeParams.push(languageParam);
+    nodeFilters.push("source_brief_id IS NULL");
+  }
+  if (sourceParam === "briefs") {
+    reviewFilters.push("ln.source_brief_id IS NOT NULL");
+    nodeFilters.push("source_brief_id IS NOT NULL");
+  }
+
+  const reviews = db
+    .prepare(
+      `SELECT DATE(rl.created_at) as date, COUNT(*) as count
+       FROM review_log rl ${reviewJoin}
+       WHERE ${reviewFilters.join(" AND ")}
+       GROUP BY DATE(rl.created_at)`
+    )
+    .all(...reviewParams) as Array<{ date: string; count: number }>;
+
+  const created = db
+    .prepare(
+      `SELECT DATE(created_at) as date, COUNT(*) as count
+       FROM learning_nodes
+       WHERE ${nodeFilters.join(" AND ")}
+       GROUP BY DATE(created_at)`
+    )
+    .all(...nodeParams) as Array<{ date: string; count: number }>;
+
+  let chatRows: Array<{ date: string; count: number }> = [];
+  if (!languageParam) {
+    chatRows = db
+      .prepare(
+        `SELECT DATE(cm.created_at) as date, COUNT(*) as count
+         FROM chat_messages cm
+         WHERE cm.created_at >= ? AND cm.created_at < ? AND cm.role = 'user'
+         GROUP BY DATE(cm.created_at)`
+      )
+      .all(from, to) as Array<{ date: string; count: number }>;
+  }
+
+  // Build day map for exactly 7 days
+  const dayMap = new Map<string, number>();
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(sixDaysAgo);
+    d.setDate(d.getDate() + i);
+    dayMap.set(d.toISOString().split("T")[0], 0);
+  }
+
+  for (const row of [...reviews, ...created, ...chatRows]) {
+    if (dayMap.has(row.date)) {
+      dayMap.set(row.date, (dayMap.get(row.date) || 0) + row.count);
+    }
+  }
+
+  const days = Array.from(dayMap.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([date, count]) => ({ date, count }));
+
+  res.json({ days });
 });
 
 // --- Helpers ---
