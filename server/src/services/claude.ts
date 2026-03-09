@@ -54,7 +54,7 @@ Source bullet: "${bullet}"
 
 Generate an analytical flashcard:
 - "front": A second-order question that requires recalling this event AND making a judgment about its implications, significance, or consequences. Do NOT just restate the bullet.
-- "back": A detailed analytical answer explaining the reasoning. Must be substantively different from the question.
+- "back": A concise analytical answer. STRICT LIMIT: maximum 3 sentences, each sentence no more than 10 words. Be direct and dense.
 
 Return ONLY this JSON:
 {"front": "...", "back": "..."}`;

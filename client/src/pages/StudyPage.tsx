@@ -274,14 +274,23 @@ export default function StudyPage() {
 
     try {
       await submitReview(node.id, rating);
-      setReviewed((r) => r + 1);
       setRevealed(false);
 
-      if (currentIndex < dueNodes.length - 1) {
-        setCurrentIndex((i) => i + 1);
+      if (rating === 1) {
+        // "Again" — move card to end of queue, don't count as reviewed
+        setDueNodes((prev) => [
+          ...prev.slice(0, currentIndex),
+          ...prev.slice(currentIndex + 1),
+          node,
+        ]);
       } else {
-        setDueNodes([]);
-        setCurrentIndex(0);
+        setReviewed((r) => r + 1);
+        if (currentIndex < dueNodes.length - 1) {
+          setCurrentIndex((i) => i + 1);
+        } else {
+          setDueNodes([]);
+          setCurrentIndex(0);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -297,7 +306,7 @@ export default function StudyPage() {
   }
 
   const currentNode = dueNodes[currentIndex];
-  const total = dueNodes.length + reviewed;
+  const total = dueNodes.length;
 
   return (
     <div className="mx-auto max-w-4xl p-6 animate-fade-in-up">

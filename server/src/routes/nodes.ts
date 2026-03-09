@@ -21,6 +21,7 @@ router.get("/subjects", (_req, res) => {
         COUNT(CASE WHEN r.due_date <= ? THEN 1 END) as due_count
       FROM learning_nodes ln
       LEFT JOIN reviews r ON r.node_id = ln.id
+      WHERE ln.source_brief_id IS NULL
       GROUP BY ln.language
       ORDER BY COUNT(ln.id) DESC`
     )
@@ -80,7 +81,7 @@ router.get("/by-language/:lang", (req, res) => {
       `SELECT ln.*, r.due_date, r.ease, r.interval, r.repetitions
        FROM learning_nodes ln
        LEFT JOIN reviews r ON r.node_id = ln.id
-       WHERE ln.language = ?
+       WHERE ln.language = ? AND ln.source_brief_id IS NULL
        ORDER BY ln.id DESC`
     )
     .all(req.params.lang);
@@ -137,6 +138,7 @@ router.get("/due", (req, res) => {
   if (languageParam) {
     conditions.push("n.language = ?");
     params.push(languageParam);
+    conditions.push("n.source_brief_id IS NULL");
   }
 
   if (sourceParam === "briefs") {

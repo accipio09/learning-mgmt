@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { RotateCcw, Loader2, Sparkles, Check } from "lucide-react";
+import { RotateCcw, Loader2, Sparkles, Check, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ParticleSystem } from "@/lib/particles";
 import { getTodayLanguage } from "@/i18n/index";
@@ -54,7 +54,7 @@ function cleanUrl(raw: string): string {
   return raw.replace(/[).,;:]+$/, "");
 }
 
-function makeMdComponents(url: string | null) {
+function makeMdComponents(url: string | null, hasStrong: boolean = false) {
   return {
     a: () => null,
     strong: ({ children }: { children?: React.ReactNode }) =>
@@ -69,6 +69,22 @@ function makeMdComponents(url: string | null) {
         </a>
       ) : (
         <strong>{children}</strong>
+      ),
+    p: ({ children }: { children?: React.ReactNode }) =>
+      url && !hasStrong ? (
+        <p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-foreground hover:text-primary transition-colors"
+          >
+            {children}
+            <ExternalLink className="ml-1.5 inline h-3 w-3 align-baseline text-muted-foreground" />
+          </a>
+        </p>
+      ) : (
+        <p>{children}</p>
       ),
   };
 }
@@ -254,13 +270,14 @@ export default function LandingPage() {
       {(phase === "card" || phase === "rating") && node && (
         <div
           className={cn(
-            "absolute inset-0 flex items-center justify-center transition-all duration-400 pointer-events-auto",
+            "absolute inset-0 overflow-y-auto transition-all duration-400 pointer-events-auto",
             phase === "card" || phase === "rating"
               ? "opacity-100 scale-100"
               : "opacity-0 scale-95"
           )}
           onClick={(e) => e.stopPropagation()}
         >
+          <div className="flex min-h-full items-center justify-center py-8">
           <div className="w-full max-w-lg px-6">
             {node.node_type === "flashcard" && cardContent && (
               <div
@@ -381,6 +398,7 @@ export default function LandingPage() {
               </div>
             )}
           </div>
+          </div>
         </div>
       )}
 
@@ -428,6 +446,7 @@ export default function LandingPage() {
                         /\s*🔗?\s*https?:\/\/\S+/g,
                         ""
                       );
+                      const hasStrong = /\*\*[^*]+\*\*/.test(clean);
 
                       return (
                         <div
@@ -437,7 +456,7 @@ export default function LandingPage() {
                           <div className="prose-brief text-foreground leading-relaxed">
                             <ReactMarkdown
                               remarkPlugins={[remarkGfm]}
-                              components={makeMdComponents(bulletUrl)}
+                              components={makeMdComponents(bulletUrl, hasStrong)}
                             >
                               {clean}
                             </ReactMarkdown>

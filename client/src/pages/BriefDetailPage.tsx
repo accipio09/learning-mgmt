@@ -8,6 +8,7 @@ import {
   Loader2,
   Sparkles,
   Check,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -23,7 +24,7 @@ function cleanUrl(raw: string): string {
   return raw.replace(/[).,;:]+$/, "");
 }
 
-function makeMdComponents(url: string | null) {
+function makeMdComponents(url: string | null, hasStrong: boolean = false) {
   return {
     a: () => null,
     strong: ({ children }: { children?: React.ReactNode }) =>
@@ -38,6 +39,22 @@ function makeMdComponents(url: string | null) {
         </a>
       ) : (
         <strong>{children}</strong>
+      ),
+    p: ({ children }: { children?: React.ReactNode }) =>
+      url && !hasStrong ? (
+        <p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-foreground hover:text-primary transition-colors"
+          >
+            {children}
+            <ExternalLink className="ml-1.5 inline h-3 w-3 align-baseline text-muted-foreground" />
+          </a>
+        </p>
+      ) : (
+        <p>{children}</p>
       ),
   };
 }
@@ -144,6 +161,7 @@ export default function BriefDetailPage() {
                     /\s*🔗?\s*https?:\/\/\S+/g,
                     ""
                   );
+                  const hasStrong = /\*\*[^*]+\*\*/.test(clean);
 
                   return (
                     <div
@@ -153,7 +171,7 @@ export default function BriefDetailPage() {
                       <div className="prose-brief text-foreground leading-relaxed">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
-                          components={makeMdComponents(bulletUrl)}
+                          components={makeMdComponents(bulletUrl, hasStrong)}
                         >
                           {clean}
                         </ReactMarkdown>
