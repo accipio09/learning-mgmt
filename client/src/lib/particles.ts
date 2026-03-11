@@ -26,7 +26,7 @@ interface TargetPoint {
   role: ParticleRole;
 }
 
-const PALETTE = ["#8B6914", "#A67B2E", "#D4C9B5", "#C4A55A", "#5C5040"];
+const PALETTE = ["#3F3F46", "#52525B", "#71717A", "#A1A1AA", "#D4D4D8"];
 const PARTICLE_COUNT = 150;
 
 export class ParticleSystem {
@@ -377,7 +377,7 @@ export class ParticleSystem {
           // Subtle border on the tile for texture
           if (m > 0.3) {
             this.ctx.globalAlpha = (m - 0.3) * 0.15 * this._canvasOpacity;
-            this.ctx.strokeStyle = "#E5DDD0";
+            this.ctx.strokeStyle = "#E4E4E7";
             this.ctx.lineWidth = 0.5;
             this.ctx.beginPath();
             this.ctx.roundRect(

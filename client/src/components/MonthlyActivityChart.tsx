@@ -77,25 +77,25 @@ export default function MonthlyActivityChart({ language, source }: Props) {
         >
           <defs>
             <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8B6914" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#8B6914" stopOpacity={0.02} />
+              <stop offset="0%" stopColor="#3F3F46" stopOpacity={0.25} />
+              <stop offset="100%" stopColor="#3F3F46" stopOpacity={0.02} />
             </linearGradient>
           </defs>
           <CartesianGrid
             strokeDasharray="3 3"
-            stroke="#E5DDD0"
+            stroke="#E4E4E7"
             strokeOpacity={0.5}
             vertical={false}
           />
           <XAxis
             dataKey="weekday"
-            tick={{ fontSize: 10, fontFamily: "Courier New", fill: "#8C8070" }}
-            axisLine={{ stroke: "#E5DDD0" }}
+            tick={{ fontSize: 10, fontFamily: "Courier New", fill: "#A1A1AA" }}
+            axisLine={{ stroke: "#E4E4E7" }}
             tickLine={false}
             interval={0}
           />
           <YAxis
-            tick={{ fontSize: 10, fontFamily: "Courier New", fill: "#8C8070" }}
+            tick={{ fontSize: 10, fontFamily: "Courier New", fill: "#A1A1AA" }}
             axisLine={false}
             tickLine={false}
             domain={[0, yMax]}
@@ -121,7 +121,7 @@ export default function MonthlyActivityChart({ language, source }: Props) {
           <Area
             type="monotone"
             dataKey="count"
-            stroke="#8B6914"
+            stroke="#3F3F46"
             strokeWidth={2}
             fill="url(#activityGradient)"
             dot={(props: Record<string, unknown>) => {
@@ -140,7 +140,7 @@ export default function MonthlyActivityChart({ language, source }: Props) {
                     cx={cx}
                     cy={cy}
                     r={4}
-                    fill="#8B6914"
+                    fill="#3F3F46"
                     stroke="#FFFFFF"
                     strokeWidth={2}
                   />
@@ -153,7 +153,7 @@ export default function MonthlyActivityChart({ language, source }: Props) {
                     cx={cx}
                     cy={cy}
                     r={2}
-                    fill="#8B6914"
+                    fill="#3F3F46"
                     fillOpacity={0.5}
                     stroke="none"
                   />
@@ -163,7 +163,7 @@ export default function MonthlyActivityChart({ language, source }: Props) {
             }}
             activeDot={{
               r: 5,
-              fill: "#8B6914",
+              fill: "#3F3F46",
               stroke: "#FFFFFF",
               strokeWidth: 2,
             }}
