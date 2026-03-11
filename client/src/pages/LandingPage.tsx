@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { RotateCcw, Loader2, Sparkles, Check, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { ParticleSystem } from "@/lib/particles";
+import ParticleCanvas from "@/components/ParticleCanvas";
 import { getTodayLanguage } from "@/i18n/index";
 import BriefChat from "@/components/BriefChat";
 import {
@@ -92,10 +92,9 @@ function makeMdComponents(url: string | null, hasStrong: boolean = false) {
 export default function LandingPage() {
   const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const psRef = useRef<ParticleSystem | null>(null);
 
   const [phase, setPhase] = useState<Phase>("dust");
+  const [cardRect, setCardRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [node, setNode] = useState<LearningNode | null>(null);
   const [brief, setBrief] = useState<BriefFull | null>(null);
   const [flipped, setFlipped] = useState(false);
@@ -129,69 +128,18 @@ export default function LandingPage() {
     getLatestBrief().then(setBrief).catch(console.error);
   }, [todayLang]);
 
-  // Initialize particle system
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
-
-    const ps = new ParticleSystem(canvas);
-    psRef.current = ps;
-
-    const { width, height } = container.getBoundingClientRect();
-    ps.resize(width, height);
-    ps.start();
-
-    const ro = new ResizeObserver((entries) => {
-      const { width: w, height: h } = entries[0].contentRect;
-      ps.resize(w, h);
-    });
-    ro.observe(container);
-
-    return () => {
-      ps.stop();
-      ro.disconnect();
-    };
-  }, []);
-
-  // Mouse tracking
-  useEffect(() => {
+  // Update cardRect when phase changes to resolving
+  const handleCanvasClick = useCallback(() => {
     const container = containerRef.current;
     if (!container) return;
-
-    function handleMove(e: MouseEvent) {
-      const rect = container!.getBoundingClientRect();
-      psRef.current?.setMouse(e.clientX - rect.left, e.clientY - rect.top);
-    }
-    container.addEventListener("mousemove", handleMove);
-    return () => container.removeEventListener("mousemove", handleMove);
-  }, []);
-
-  // Canvas opacity based on phase — keep particles visible around the card
-  useEffect(() => {
-    const ps = psRef.current;
-    if (!ps) return;
-    if (phase === "card" || phase === "rating") {
-      ps.canvasOpacity = 0.7;
-    } else {
-      ps.canvasOpacity = 1;
-    }
-  }, [phase]);
-
-  const handleCanvasClick = useCallback(() => {
-    const ps = psRef.current;
-    const container = containerRef.current;
-    if (!ps || !container) return;
 
     const { width, height } = container.getBoundingClientRect();
 
     if (phase === "dust" && node) {
       const rect = getCardRect(width, height);
-      ps.onConverged(() => setPhase("card"));
-      ps.resolve(rect);
+      setCardRect(rect);
       setPhase("resolving_card");
     } else if (phase === "dust2" && brief) {
-      ps.stop();
       setPhase("brief");
     }
   }, [phase, node, brief]);
@@ -205,7 +153,6 @@ export default function LandingPage() {
     }
 
     setPhase("dissolving");
-    psRef.current?.dissolve();
     setFlipped(false);
     setMcSelected(null);
     setFrRevealed(false);
@@ -244,8 +191,6 @@ export default function LandingPage() {
     }
   }
 
-  const showOverlay = phase === "card" || phase === "rating";
-
   const cardContent = node?.content;
 
   return (
@@ -257,14 +202,15 @@ export default function LandingPage() {
       )}
       onClick={phase !== "brief" ? handleCanvasClick : undefined}
     >
-      {/* Particle canvas */}
-      <canvas
-        ref={canvasRef}
-        className={cn(
-          "absolute inset-0 transition-opacity duration-700",
-          phase === "brief" ? "opacity-0 pointer-events-none" : "opacity-100"
-        )}
-      />
+      {/* 3D Particle system */}
+      {phase !== "brief" && (
+        <ParticleCanvas
+          phase={phase}
+          cardRect={cardRect}
+          onConverged={() => setPhase("card")}
+          opacity={phase === "card" || phase === "rating" ? 0.7 : 1}
+        />
+      )}
 
       {/* Flashcard overlay */}
       {(phase === "card" || phase === "rating") && node && (
