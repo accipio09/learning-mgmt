@@ -93,8 +93,8 @@ export default function LibraryPage() {
               onClick={() => navigate(`/library/${subject.slug}`)}
               className="rounded-xl p-6 text-left transition-all glow-border card-float bg-card hover:bg-secondary/30"
             >
-              <Languages className="h-8 w-8 text-accent mb-3" />
-              <h2 className="text-lg font-semibold font-terminal text-accent">
+              <Languages className="h-8 w-8 text-primary mb-3" />
+              <h2 className="text-lg font-semibold font-terminal text-primary">
                 {langName}
               </h2>
               <div className="mt-3 space-y-1">
