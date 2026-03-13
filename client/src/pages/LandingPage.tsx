@@ -112,16 +112,23 @@ export default function LandingPage() {
   useEffect(() => {
     getDueNodes({ language: todayLang })
       .then((nodes) => {
+        if (nodes.length > 0) return nodes;
+        return getDueNodes({ language: todayLang, all: true });
+      })
+      .then((nodes) => {
+        if (nodes.length > 0) return nodes;
+        // Fallback: due cards from any language
+        return getDueNodes();
+      })
+      .then((nodes) => {
+        if (nodes.length > 0) return nodes;
+        // Fallback: all cards from any language
+        return getDueNodes({ all: true });
+      })
+      .then((nodes) => {
         if (nodes.length > 0) {
           const idx = Math.floor(Math.random() * nodes.length);
           setNode(nodes[idx]);
-        } else {
-          // Fallback: try all cards for this language (not just due)
-          return getDueNodes({ language: todayLang, all: true }).then((all) => {
-            if (all.length > 0) {
-              setNode(all[Math.floor(Math.random() * all.length)]);
-            }
-          });
         }
       })
       .catch(console.error);
