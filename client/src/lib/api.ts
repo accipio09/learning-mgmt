@@ -45,6 +45,10 @@ export function getLatestBrief(): Promise<BriefFull> {
   return request("/briefs/latest");
 }
 
+export function reindexBriefs(): Promise<{ indexed: number }> {
+  return request("/briefs/reindex", { method: "POST" });
+}
+
 // --- Chat ---
 
 export interface ChatMessage {

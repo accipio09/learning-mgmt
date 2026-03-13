@@ -10,6 +10,7 @@ import BriefChat from "@/components/BriefChat";
 import {
   getDueNodes,
   getLatestBrief,
+  reindexBriefs,
   createNodeFromBullet,
   submitReview,
   type LearningNode,
@@ -125,7 +126,11 @@ export default function LandingPage() {
       })
       .catch(console.error);
 
-    getLatestBrief().then(setBrief).catch(console.error);
+    reindexBriefs()
+      .catch(console.error)
+      .then(() => getLatestBrief())
+      .then((b) => b && setBrief(b))
+      .catch(console.error);
   }, [todayLang]);
 
   // Update cardRect when phase changes to resolving

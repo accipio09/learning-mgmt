@@ -18,6 +18,7 @@ import {
   getBriefs,
   getChatMessages,
   getChatSummaries,
+  reindexBriefs,
   type BriefSummary,
   type ChatMessage,
   type ChatSummary,
@@ -58,8 +59,10 @@ export default function BriefsSubjectPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
-    getBriefs()
-      .then(setBriefs)
+    reindexBriefs()
+      .catch(console.error)
+      .then(() => getBriefs())
+      .then((b) => b && setBriefs(b))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

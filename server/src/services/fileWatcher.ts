@@ -47,6 +47,17 @@ function indexBrief(filePath: string) {
   console.log(`Indexed brief: ${filename} (${language})`);
 }
 
+export function reindexBriefs(): number {
+  const briefsDir = config.briefsDir;
+  if (!fs.existsSync(briefsDir)) return 0;
+
+  const files = fs.readdirSync(briefsDir).filter((f) => f.endsWith(".md"));
+  for (const file of files) {
+    indexBrief(path.join(briefsDir, file));
+  }
+  return files.length;
+}
+
 export function startFileWatcher() {
   const briefsDir = config.briefsDir;
 

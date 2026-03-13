@@ -1,5 +1,6 @@
 import { Router } from "express";
 import db from "../db/client";
+import { reindexBriefs } from "../services/fileWatcher";
 
 const router = Router();
 
@@ -47,6 +48,12 @@ router.get("/:id", (req, res) => {
     return res.status(404).json({ error: "Brief not found" });
   }
   res.json(parseBriefStructure(brief as Record<string, unknown>));
+});
+
+// Re-scan briefs directory and index all .md files
+router.post("/reindex", (_req, res) => {
+  const indexed = reindexBriefs();
+  res.json({ indexed });
 });
 
 export default router;
